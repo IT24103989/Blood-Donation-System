@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div th:fragment="header">
+    <nav>
+        <!-- Show these links only if user is authenticated -->
+        <div sec:authorize="isAuthenticated()">
+            <a th:href="@{/dashboard}">Dashboard</a>
+
+            <!-- Role-specific links -->
+            <div sec:authorize="hasRole('DONOR')">
+                <a th:href="@{/donor/profile}">Donor Profile</a>
+            </div>
+
+            <div sec:authorize="hasRole('REGISTRATION_OFFICER')">
+                <a th:href="@{/registration-officer/manage-donors}">Manage Donors</a>
+            </div>
+
+            <div sec:authorize="hasRole('MEDICAL_ADVISER')">
+                <a th:href="@{/medical-adviser/reviews}">Medical Reviews</a>
+            </div>
+
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin/users}">Manage Users</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+    </nav>
+</div>
+</html>
