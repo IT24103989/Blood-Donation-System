@@ -3,6 +3,7 @@ package com.donation.LifeLine.controllers;
 import com.donation.LifeLine.model.UnregisterdDonor;
 import com.donation.LifeLine.repository.UnregisterdDonorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,9 @@ public class DonorRegistrationController {
 
     @Autowired
     private UnregisterdDonorRepository donorRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Show donor registration form
     @GetMapping("/register")
@@ -37,7 +41,7 @@ public class DonorRegistrationController {
             redirectAttrs.addFlashAttribute("donor", donor);
             return "redirect:/donor/register";
         }
-
+        donor.setPassword(passwordEncoder.encode(donor.getPassword()));
         // Save to DB
         donorRepository.save(donor);
 
