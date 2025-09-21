@@ -27,7 +27,7 @@ public class DonorRegistrationController {
     }
 
     // Handle form submit (POST from your form's th:action="@{/donor/register}")
-    @PostMapping("/donor/register")
+    @PostMapping("/register")
     public String registerDonor(@ModelAttribute("donor") UnregisterdDonor donor,
                                 RedirectAttributes redirectAttrs) {
         // NIC uniqueness check
