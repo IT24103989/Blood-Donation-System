@@ -173,12 +173,6 @@
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pending-tab" data-bs-toggle="tab"
-                                        data-bs-target="#pending" type="button">
-                                    Pending Approval
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="approved-tab" data-bs-toggle="tab"
                                         data-bs-target="#approved" type="button">
                                     Approved
@@ -235,8 +229,23 @@
                                             <td th:text="${donor.medicationDetails}"></td>
                                             <td th:text="${donor.chronicConditionDetails}"></td>
                                             <td>
-                                                <a th:href="@{'/donors/approve/' + ${donor.id}}" class="btn btn-sm btn-success me-1">Approve</a>
-                                                <a th:href="@{'/donors/reject/' + ${donor.id}}" class="btn btn-sm btn-danger">Reject</a>
+<!--                                                <a th:href="@{'/donors/approve/' + ${donor.id}}" class="btn btn-sm btn-success me-1">Approve</a>-->
+<!--                                                <a th:href="@{'/donors/reject/' + ${donor.id}}" class="btn btn-sm btn-danger">Reject</a>-->
+                                            </td>
+                                            <td>
+                                                <a th:if="${!donor.isApproved and !donor.isRejected}"
+                                                   th:href="@{'/medical-adviser/donors/approve/' + ${donor.id}}"
+                                                   class="btn btn-sm btn-success me-1">Approve</a>
+
+                                                <a th:if="${!donor.isApproved and !donor.isRejected}"
+                                                   th:href="@{'/medical-adviser/donors/reject/' + ${donor.id}}"
+                                                   class="btn btn-sm btn-danger">Reject</a>
+
+                                                <!-- Show badge if approved -->
+                                                <span th:if="${donor.isApproved}" class="badge bg-success">Approved</span>
+
+                                                <!-- Show badge if rejected -->
+                                                <span th:if="${donor.isRejected}" class="badge bg-danger">Rejected</span>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -244,20 +253,70 @@
                                 </div>
                             </div>
 
-                            <!-- Pending Approval Tab -->
-                            <div class="tab-pane fade" id="pending" role="tabpanel">
-                                <p>Show pending donors here...</p>
-                            </div>
-
                             <!-- Approved Tab -->
                             <div class="tab-pane fade" id="approved" role="tabpanel">
-                                <p>Show approved donors here...</p>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="approvedDonorsTable">
+                                        <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Full Name</th>
+                                            <th>NIC</th>
+                                            <th>Address</th>
+                                            <th>Blood Group</th>
+                                            <th>Weight</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="donor : ${donors}" th:if="${donor.isApproved}">
+                                            <td th:text="${donor.id}"></td>
+                                            <td th:text="${donor.fullName}"></td>
+                                            <td th:text="${donor.nic}"></td>
+                                            <td th:text="${donor.address}"></td>
+                                            <td th:text="${donor.bloodGroup}"></td>
+                                            <td th:text="${donor.weight}"></td>
+                                            <td>
+                                                <span class="badge bg-success">Approved</span>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
 
                             <!-- Rejected Tab -->
                             <div class="tab-pane fade" id="rejected" role="tabpanel">
-                                <p>Show rejected donors here...</p>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="rejectedDonorsTable">
+                                        <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Full Name</th>
+                                            <th>NIC</th>
+                                            <th>Address</th>
+                                            <th>Blood Group</th>
+                                            <th>Weight</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="donor : ${donors}" th:if="${donor.isRejected}">
+                                            <td th:text="${donor.id}"></td>
+                                            <td th:text="${donor.fullName}"></td>
+                                            <td th:text="${donor.nic}"></td>
+                                            <td th:text="${donor.address}"></td>
+                                            <td th:text="${donor.bloodGroup}"></td>
+                                            <td th:text="${donor.weight}"></td>
+                                            <td>
+                                                <span class="badge bg-danger">Rejected</span>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

@@ -34,4 +34,11 @@ public class UnregisterdDonor {
     private String medicationDetails;
     private String chronicConditionDetails;
 
+    // Approval Status
+    @Column(nullable = false)
+    private Boolean isApproved = false;
+
+    @Column(nullable = false)
+    private Boolean isRejected = false;
+
 }
