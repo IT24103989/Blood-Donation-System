@@ -1,30 +1,33 @@
 package com.donation.LifeLine.config;
 
 import com.donation.LifeLine.services.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/thank-you").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/donor/register", "/thank-you", "/api/register").permitAll()
+                        .requestMatchers("/dashboard").authenticated()
                         .requestMatchers("/donor/**").hasRole("DONOR")
                         .requestMatchers("/registration-officer/**").hasRole("REGISTRATION_OFFICER")
                         .requestMatchers("/medical-adviser/**").hasRole("MEDICAL_ADVISER")
@@ -33,29 +36,50 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard", true) // true = always redirect
+                        .loginProcessingUrl("/login")
+                        .successHandler(roleBasedSuccessHandler())
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
-                )
-                // ✅ Optional: Remember Me Support
-                .rememberMe(remember -> remember
-                        .userDetailsService(userDetailsService)
-                        .tokenValiditySeconds(86400) // 1 day
                 );
-
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler roleBasedSuccessHandler() {
+        return new AuthenticationSuccessHandler() {
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                                Authentication authentication) throws IOException, ServletException {
+                for (GrantedAuthority authority : authentication.getAuthorities()) {
+                    String role = authority.getAuthority();
+                    switch (role) {
+                        case "ROLE_DONOR":
+                            response.sendRedirect("/donor/dashboard");
+                            return;
+                        case "ROLE_REGISTRATION_OFFICER":
+                            response.sendRedirect("/registration-officer/dashboard");
+                            return;
+                        case "ROLE_MEDICAL_ADVISER":
+                            response.sendRedirect("/medical-adviser/dashboard");
+                            return;
+                        case "ROLE_ADMIN":
+                            response.sendRedirect("/admin/dashboard");
+                            return;
+                    }
+                }
+                // Fallback redirect if no specific role is found
+                response.sendRedirect("/dashboard");
+            }
+        };
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
     }
 }
