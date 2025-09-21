@@ -18,9 +18,9 @@ public class HomeController {
     public String login(Model model, @RequestParam(value = "error", required = false) String error,
                         @RequestParam(value = "logout", required = false) String logout) {
         model.addAttribute("loginDTO", new LoginDTO());
-//        if (error != null) {
-//            model.addAttribute("error", "Invalid username or password");
-//        }
+        if (error != null) {
+            model.addAttribute("error", "Invalid username or password");
+        }
         if (logout != null) {
             model.addAttribute("message", "You have been logged out successfully");
         }

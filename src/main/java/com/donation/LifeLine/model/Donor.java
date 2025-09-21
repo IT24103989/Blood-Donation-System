@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class RegisterdDonor {
+public class Donor {
     private String fullName;
     private String nic;
     private String address;

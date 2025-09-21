@@ -12,6 +12,6 @@ public class RegistrationOfficerController {
 
     @GetMapping("/dashboard")
     public String registrationOfficerDashboard() {
-        return "registration-officer-dashboard";
+        return "DonorRegistrationOfficer/registration-officer-dashboard";
     }
 }

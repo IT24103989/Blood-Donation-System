@@ -26,7 +26,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/donor/register", "/thank-you", "/api/register").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/donor/register", "/thank-you", "/api/**").permitAll()
                         .requestMatchers("/dashboard").authenticated()
                         .requestMatchers("/donor/**").hasRole("DONOR")
                         .requestMatchers("/registration-officer/**").hasRole("REGISTRATION_OFFICER")

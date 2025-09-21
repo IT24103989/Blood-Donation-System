@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,17 +16,78 @@
             --secondary-red: #cb1818;
             --light-red: #fff5f5;
         }
-        .navbar-brand { font-weight: bold; color: var(--primary-red) !important; }
-        .btn-primary { background-color: var(--primary-red); border-color: var(--primary-red); transition: all 0.3s; color: #fff !important; }
-        .btn-primary:hover { background-color: var(--secondary-red); border-color: var(--secondary-red); transform: scale(1.05); }
-        .sidebar { background-color: #fff; border-right: 1px solid #eee; height: 100vh; position: fixed; }
-        .content-area { margin-left: 250px; padding: 2rem; }
-        .dashboard-card { border-radius: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.1); transition: transform 0.3s; }
-        .stats-card { background: var(--light-red); border-radius: 10px; padding: 1.5rem; text-align: center; }
-        .profile-image { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 5px solid var(--light-red); }
-        .nav-tabs .nav-link.active { color: var(--primary-red); border-bottom: 3px solid var(--primary-red); }
-        .nav-tabs .nav-link { color: #666; }
-        @media (max-width: 768px) { .sidebar { position: relative; height: auto; } .content-area { margin-left: 0; } }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-red) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-red);
+            border-color: var(--primary-red);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease-in-out;
+            color: #fff !important;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-red);
+            border-color: var(--secondary-red);
+            transform: scale(1.05);
+        }
+
+        .sidebar {
+            background-color: #fff;
+            border-right: 1px solid #eee;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .content-area {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .dashboard-card {
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .stats-card {
+            background: var(--light-red);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--light-red);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-red);
+            border-bottom: 3px solid var(--primary-red);
+        }
+
+        .nav-tabs .nav-link {
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                height: auto;
+            }
+            .content-area {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -34,7 +95,7 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
     <div class="container">
-        <a class="navbar-brand" th:href="@{/}">
+        <a class="navbar-brand" href="index.html">
             <i class="fas fa-heart me-2"></i>Life Line
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -47,13 +108,13 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-md"></i> <span th:text="${adviser.name}">Dr. Sarah Johnson</span>
+                        <i class="fas fa-user-md"></i> Dr. Sarah Johnson
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/adviser/profile}">Profile</a></li>
-                        <li><a class="dropdown-item" th:href="@{/adviser/settings}">Settings</a></li>
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
+                        <li><a class="dropdown-item" href="#">Logout</a></li>
                     </ul>
                 </li>
             </ul>
@@ -66,11 +127,20 @@
         <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 sidebar p-3">
             <div class="d-flex flex-column">
-                <a th:href="@{/adviser/dashboard}" class="btn btn-primary mb-3">
+                <a href="#" class="btn btn-primary mb-3">
                     <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                 </a>
-                <a th:href="@{/adviser/donors}" class="btn btn-outline-secondary mb-2">
+                <a href="#" class="btn btn-outline-secondary mb-2">
                     <i class="fas fa-users me-2"></i> Donors
+                </a>
+                <a href="#" class="btn btn-outline-secondary mb-2">
+                    <i class="fas fa-calendar-alt me-2"></i> Appointments
+                </a>
+                <a href="#" class="btn btn-outline-secondary mb-2">
+                    <i class="fas fa-chart-bar me-2"></i> Reports
+                </a>
+                <a href="#" class="btn btn-outline-secondary mb-2">
+                    <i class="fas fa-cog me-2"></i> Settings
                 </a>
             </div>
         </div>
@@ -83,17 +153,17 @@
                     <div class="dashboard-card p-4 bg-white">
                         <div class="row align-items-center">
                             <div class="col-md-2 text-center">
-                                <img th:src="@{${adviser.profileImage}}" alt="Profile" class="profile-image mb-3">
+                                <img src="https://via.placeholder.com/120" alt="Profile" class="profile-image mb-3">
                             </div>
                             <div class="col-md-6">
-                                <h3 th:text="${adviser.name}">Dr. Sarah Johnson</h3>
-                                <p class="text-muted mb-2" th:text="${adviser.role}">Medical Adviser</p>
-                                <p class="text-muted mb-2">ID: <span th:text="${adviser.id}">MA-2025-001</span></p>
-                                <p class="text-muted mb-0">Last Login: <span th:text="${adviser.lastLogin}">2025-09-20 07:00 AM</span></p>
+                                <h3>Dr. Sarah Johnson</h3>
+                                <p class="text-muted mb-2">Medical Adviser</p>
+                                <p class="text-muted mb-2">ID: MA-2025-001</p>
+                                <p class="text-muted mb-0">Last Login: 2025-09-20 07:00 AM</p>
                             </div>
                             <div class="col-md-4">
                                 <div class="stats-card mb-2">
-                                    <h4 th:text="${pendingApprovals}">15</h4>
+                                    <h4>15</h4>
                                     <p class="mb-0">Pending Approvals</p>
                                 </div>
                             </div>
@@ -145,103 +215,51 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr th:each="donor : ${donors}">
-                                            <td th:text="${donor.fullName}">John Doe</td>
-                                            <td th:text="${donor.bloodType}">A+</td>
-                                            <td th:text="${donor.phone}">+94 77 123 4567</td>
-                                            <td th:text="${donor.registrationDate}">2025-09-15</td>
-                                            <td>
-                                                <span class="badge"
-                                                      th:classappend="${donor.status == 'Pending'} ? ' bg-warning' :
-                                                                       ${donor.status == 'Approved'} ? ' bg-success' :
-                                                                       ' bg-danger'"
-                                                      th:text="${donor.status}">Pending</span>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-success me-1" th:if="${donor.status=='Pending'}">Approve</button>
-                                                <button class="btn btn-sm btn-danger" th:if="${donor.status=='Pending'}">Reject</button>
-                                                <button class="btn btn-sm btn-primary" th:if="${donor.status!='Pending'}">View Details</button>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- Pending Tab -->
-                            <div class="tab-pane fade" id="pending" role="tabpanel">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
                                         <tr>
-                                            <th>Name</th><th>Blood Type</th><th>Contact</th><th>Registration Date</th><th>Actions</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr th:each="donor : ${donors}" th:if="${donor.status=='Pending'}">
-                                            <td th:text="${donor.fullName}"></td>
-                                            <td th:text="${donor.bloodType}"></td>
-                                            <td th:text="${donor.phone}"></td>
-                                            <td th:text="${donor.registrationDate}"></td>
+                                            <td>John Doe</td>
+                                            <td>A+</td>
+                                            <td>+94 77 123 4567</td>
+                                            <td>2025-09-15</td>
+                                            <td><span class="badge bg-warning">Pending</span></td>
                                             <td>
                                                 <button class="btn btn-sm btn-success me-1">Approve</button>
                                                 <button class="btn btn-sm btn-danger">Reject</button>
                                             </td>
                                         </tr>
+                                        <tr>
+                                            <td>Jane Smith</td>
+                                            <td>O-</td>
+                                            <td>+94 77 890 1234</td>
+                                            <td>2025-09-14</td>
+                                            <td><span class="badge bg-success">Approved</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">View Details</button>
+                                            </td>
+                                        </tr>
+                                        <!-- Add more rows as needed -->
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+
+                            <!-- Pending Approval Tab -->
+                            <div class="tab-pane fade" id="pending" role="tabpanel">
+                                <!-- Similar table structure with only pending donors -->
                             </div>
 
                             <!-- Approved Tab -->
                             <div class="tab-pane fade" id="approved" role="tabpanel">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                        <tr>
-                                            <th>Name</th><th>Blood Type</th><th>Contact</th><th>Registration Date</th><th>Actions</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr th:each="donor : ${donors}" th:if="${donor.status=='Approved'}">
-                                            <td th:text="${donor.fullName}"></td>
-                                            <td th:text="${donor.bloodType}"></td>
-                                            <td th:text="${donor.phone}"></td>
-                                            <td th:text="${donor.registrationDate}"></td>
-                                            <td><button class="btn btn-sm btn-primary">View Details</button></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <!-- Similar table structure with only approved donors -->
                             </div>
 
                             <!-- Rejected Tab -->
                             <div class="tab-pane fade" id="rejected" role="tabpanel">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                        <tr>
-                                            <th>Name</th><th>Blood Type</th><th>Contact</th><th>Registration Date</th><th>Actions</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr th:each="donor : ${donors}" th:if="${donor.status=='Rejected'}">
-                                            <td th:text="${donor.fullName}"></td>
-                                            <td th:text="${donor.bloodType}"></td>
-                                            <td th:text="${donor.phone}"></td>
-                                            <td th:text="${donor.registrationDate}"></td>
-                                            <td><button class="btn btn-sm btn-primary">View Details</button></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <!-- Similar table structure with only rejected donors -->
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -256,6 +274,7 @@
 
 <script>
     $(document).ready(function() {
+        // Initialize DataTables
         $('#allDonorsTable').DataTable({
             "pageLength": 10,
             "searching": true,

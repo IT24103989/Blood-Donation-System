@@ -12,6 +12,6 @@ public class MedicalAdviserController {
 
     @GetMapping("/dashboard")
     public String medicalAdviserDashboard() {
-        return "medical-adviser-dashboard";
+        return "MedicalAdviser/medical-adviser-dashboard";
     }
 }

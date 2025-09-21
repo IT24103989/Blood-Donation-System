@@ -12,6 +12,6 @@ public class DonorController {
 
     @GetMapping("/dashboard")
     public String donorDashboard() {
-        return "donor-dashboard";
+        return "Donor/donor-dashboard";
     }
 }
