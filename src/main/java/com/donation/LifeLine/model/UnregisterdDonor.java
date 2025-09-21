@@ -41,4 +41,7 @@ public class UnregisterdDonor {
     @Column(nullable = false)
     private Boolean isRejected = false;
 
+    @Column(nullable = false)
+    private Boolean isRegistered = false;
+
 }
