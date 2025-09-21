@@ -93,6 +93,14 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="registered-donors-tab" data-bs-toggle="tab" data-bs-target="#registered-donors" type="button">Registered Donors</button>
                             </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="create-appointment-tab" data-bs-toggle="tab"
+                                        data-bs-target="#create-appointment" type="button">Create Appointment</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="appointments-tab" data-bs-toggle="tab"
+                                        data-bs-target="#appointments" type="button">Appointments</button>
+                            </li>
                         </ul>
 
                         <div class="tab-content mt-4" id="myTabContent">
@@ -105,7 +113,17 @@
                                             <th>ID</th>
                                             <th>Full Name</th>
                                             <th>NIC</th>
+                                            <th>Address</th>
                                             <th>Blood Group</th>
+                                            <th>Weight</th>
+                                            <th>Travel History</th>
+                                            <th>Date of Birth</th>
+                                            <th>Recent Fever/Flu</th>
+                                            <th>Taking Medications</th>
+                                            <th>Recent Surgery/Tattoo</th>
+                                            <th>Chronic Conditions</th>
+                                            <th>Medication Details</th>
+                                            <th>Chronic Condition Details</th>
                                             <th>Status</th>
                                         </tr>
                                         </thead>
@@ -113,16 +131,36 @@
                                         <tr th:each="donor : ${approvedDonors}">
                                             <td th:text="${donor.id}"></td>
                                             <td>
-                                                <!-- Use data attributes instead of th:onclick -->
                                                 <a href="#" class="donor-link"
                                                    th:data-id="${donor.id}"
                                                    th:data-name="${donor.fullName}"
                                                    th:data-nic="${donor.nic}"
+                                                   th:data-address="${donor.address}"
                                                    th:data-blood="${donor.bloodGroup}"
-                                                   th:text="${donor.fullName}"></a>
+                                                   th:data-weight="${donor.weight}"
+                                                   th:data-travel="${donor.travelHistory}"
+                                                   th:data-dob="${donor.dateOfBirth}"
+                                                   th:data-fever="${donor.hasRecentFeverOrFlu}"
+                                                   th:data-meds="${donor.isTakingMedications}"
+                                                   th:data-surgery="${donor.hadRecentSurgeryOrTattoo}"
+                                                   th:data-chronic="${donor.hasChronicConditions}"
+                                                   th:data-medication-details="${donor.medicationDetails}"
+                                                   th:data-chronic-details="${donor.chronicConditionDetails}"
+                                                   th:text="${donor.fullName}">
+                                                </a>
                                             </td>
                                             <td th:text="${donor.nic}"></td>
+                                            <td th:text="${donor.address}"></td>
                                             <td th:text="${donor.bloodGroup}"></td>
+                                            <td th:text="${donor.weight}"></td>
+                                            <td th:text="${donor.travelHistory}"></td>
+                                            <td th:text="${donor.dateOfBirth}"></td>
+                                            <td th:text="${donor.hasRecentFeverOrFlu}"></td>
+                                            <td th:text="${donor.isTakingMedications}"></td>
+                                            <td th:text="${donor.hadRecentSurgeryOrTattoo}"></td>
+                                            <td th:text="${donor.hasChronicConditions}"></td>
+                                            <td th:text="${donor.medicationDetails}"></td>
+                                            <td th:text="${donor.chronicConditionDetails}"></td>
                                             <td><span class="badge bg-success">Approved</span></td>
                                         </tr>
                                         </tbody>
@@ -134,9 +172,21 @@
                                     <h5>Donor Details</h5>
                                     <form th:action="@{/registration-officer/register-donor}" method="post">
                                         <input type="hidden" name="donorId" id="donorId">
+
                                         <div class="mb-2"><label>Full Name</label><input type="text" class="form-control" id="fullName" disabled></div>
                                         <div class="mb-2"><label>NIC</label><input type="text" class="form-control" id="nic" disabled></div>
+                                        <div class="mb-2"><label>Address</label><input type="text" class="form-control" id="address" disabled></div>
                                         <div class="mb-2"><label>Blood Group</label><input type="text" class="form-control" id="bloodGroup" disabled></div>
+                                        <div class="mb-2"><label>Weight</label><input type="text" class="form-control" id="weight" disabled></div>
+                                        <div class="mb-2"><label>Travel History</label><input type="text" class="form-control" id="travelHistory" disabled></div>
+                                        <div class="mb-2"><label>Date of Birth</label><input type="text" class="form-control" id="dob" disabled></div>
+                                        <div class="mb-2"><label>Recent Fever/Flu</label><input type="text" class="form-control" id="feverFlu" disabled></div>
+                                        <div class="mb-2"><label>Taking Medications</label><input type="text" class="form-control" id="takingMeds" disabled></div>
+                                        <div class="mb-2"><label>Recent Surgery/Tattoo</label><input type="text" class="form-control" id="surgeryTattoo" disabled></div>
+                                        <div class="mb-2"><label>Chronic Conditions</label><input type="text" class="form-control" id="chronicConditions" disabled></div>
+                                        <div class="mb-2"><label>Medication Details</label><input type="text" class="form-control" id="medicationDetails" disabled></div>
+                                        <div class="mb-2"><label>Chronic Condition Details</label><input type="text" class="form-control" id="chronicConditionDetails" disabled></div>
+
                                         <div class="d-grid mt-3"><button type="submit" class="btn btn-primary">Register Donor</button></div>
                                     </form>
                                 </div>
@@ -151,16 +201,116 @@
                                             <th>ID</th>
                                             <th>Full Name</th>
                                             <th>NIC</th>
+                                            <th>Address</th>
                                             <th>Blood Group</th>
+                                            <th>Weight</th>
+                                            <th>Travel History</th>
+                                            <th>Date of Birth</th>
+                                            <th>Recent Fever/Flu</th>
+                                            <th>Taking Medications</th>
+                                            <th>Recent Surgery/Tattoo</th>
+                                            <th>Chronic Conditions</th>
+                                            <th>Medication Details</th>
+                                            <th>Chronic Condition Details</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr th:each="user : ${registeredDonors}">
-                                            <td th:text="${user.id}"></td>
-                                            <td th:text="${user.username}"></td>
-                                            <td th:text="${user.username}"></td>
-                                            <td>—</td>
+                                        <tr th:each="donor : ${registeredDonors}">
+                                            <td th:text="${donor.id}"></td>
+                                            <td th:text="${donor.fullName}"></td>
+                                            <td th:text="${donor.nic}"></td>
+                                            <td th:text="${donor.address}"></td>
+                                            <td th:text="${donor.bloodGroup}"></td>
+                                            <td th:text="${donor.weight}"></td>
+                                            <td th:text="${donor.travelHistory}"></td>
+                                            <td th:text="${donor.dateOfBirth}"></td>
+                                            <td th:text="${donor.hasRecentFeverOrFlu}"></td>
+                                            <td th:text="${donor.isTakingMedications}"></td>
+                                            <td th:text="${donor.hadRecentSurgeryOrTattoo}"></td>
+                                            <td th:text="${donor.hasChronicConditions}"></td>
+                                            <td th:text="${donor.medicationDetails}"></td>
+                                            <td th:text="${donor.chronicConditionDetails}"></td>
+                                            <td><span class="badge bg-info">Registered</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary me-1">Edit</button>
+                                                <button class="btn btn-sm btn-danger">Delete</button>
+                                            </td>
+
                                         </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="create-appointment" role="tabpanel">
+                                <form id="appointmentForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Select Donor</label>
+                                            <select class="form-select" required>
+                                                <option value="">Choose Donor</option>
+                                                <option>John Doe (A+)</option>
+                                                <option>Jane Smith (O-)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Appointment Date</label>
+                                            <input type="date" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Time Slot</label>
+                                            <select class="form-select" required>
+                                                <option value="">Select Time</option>
+                                                <option>09:00 AM</option>
+                                                <option>10:00 AM</option>
+                                                <option>11:00 AM</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Location</label>
+                                            <select class="form-select" required>
+                                                <option value="">Select Location</option>
+                                                <option>Main Center</option>
+                                                <option>City Branch</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Notes</label>
+                                            <textarea class="form-control" rows="3"></textarea>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="tab-pane fade" id="appointments" role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table" id="appointmentsTable">
+                                        <thead>
+                                        <tr>
+                                            <th>Donor Name</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Location</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Jane Smith</td>
+                                            <td>2025-09-25</td>
+                                            <td>10:00 AM</td>
+                                            <td>Main Center</td>
+                                            <td><span class="badge bg-warning">Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary me-1">Edit</button>
+                                                <button class="btn btn-sm btn-danger">Delete</button>
+                                            </td>
+                                        </tr>
+                                        <!-- More rows -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -189,18 +339,26 @@
         });
 
         // Handle donor click
-        $('.donor-link').on('click', function(e){
+        $(document).on('click', '.donor-link', function(e){
             e.preventDefault();
-            let id = $(this).data('id');
-            let name = $(this).data('name');
-            let nic = $(this).data('nic');
-            let blood = $(this).data('blood');
 
             $('#donorDetailsCard').show();
-            $('#donorId').val(id);
-            $('#fullName').val(name);
-            $('#nic').val(nic);
-            $('#bloodGroup').val(blood);
+
+            $('#donorId').val($(this).data('id'));
+            $('#fullName').val($(this).data('name'));
+            $('#nic').val($(this).data('nic'));
+            $('#address').val($(this).data('address'));
+            $('#bloodGroup').val($(this).data('blood'));
+            $('#weight').val($(this).data('weight'));
+            $('#travelHistory').val($(this).data('travel'));
+            $('#dob').val($(this).data('dob'));
+            $('#feverFlu').val($(this).data('fever'));
+            $('#takingMeds').val($(this).data('meds'));
+            $('#surgeryTattoo').val($(this).data('surgery'));
+            $('#chronicConditions').val($(this).data('chronic'));
+            $('#medicationDetails').val($(this).data('medication-details'));
+            $('#chronicConditionDetails').val($(this).data('chronic-details'));
+
             $('#donorDetailsCard')[0].scrollIntoView({behavior: 'smooth'});
         });
     });

@@ -12,5 +12,8 @@ public interface UnregisterdDonorRepository extends JpaRepository<UnregisterdDon
     // You can define custom queries here if needed
     boolean existsByNic(String nic); // Example: to check if NIC is already registered
 
-    List<UnregisterdDonor> findByIsApprovedTrueAndIsRejectedFalse();
+    List<UnregisterdDonor> findByIsApprovedTrueAndIsRejectedFalseAndIsRegisteredFalse();
+
+    List<UnregisterdDonor> findByIsRegisteredTrue();
+
 }

@@ -33,18 +33,18 @@ public class RegistrationOfficerController {
     @Autowired
     private RoleRepository roleRepository;
 
-//    @GetMapping("/dashboard")
-//    public String registrationOfficerDashboard() {
-//        return "DonorRegistrationOfficer/registration-officer-dashboard";
-//    }
+
 
     @GetMapping("/dashboard")
     public String registrationOfficerDashboard(Model model) {
         // Get all approved donors
         List<UnregisterdDonor> approvedDonors = donorRepository
-                .findByIsApprovedTrueAndIsRejectedFalse();
+                .findByIsApprovedTrueAndIsRejectedFalseAndIsRegisteredFalse();
+        List<UnregisterdDonor> registeredDonors = donorRepository
+                .findByIsRegisteredTrue();
 
         model.addAttribute("approvedDonors", approvedDonors);
+        model.addAttribute("registeredDonors", registeredDonors);
         return "DonorRegistrationOfficer/registration-officer-dashboard";
     }
 
@@ -69,6 +69,9 @@ public class RegistrationOfficerController {
                 .orElseThrow(() -> new RuntimeException("ROLE_DONOR not found"));
         user.setRoles(Set.of(donorRole));
         userRepository.save(user);
+        donor.setIsRegistered(true);
+        donorRepository.save(donor);
+
 
         redirectAttrs.addFlashAttribute("success", "Donor registered successfully!");
         return "redirect:/registration-officer/dashboard";
