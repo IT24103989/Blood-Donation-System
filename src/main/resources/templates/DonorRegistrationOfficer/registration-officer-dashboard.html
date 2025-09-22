@@ -77,9 +77,14 @@
         <div class="col-md-9 col-lg-10 content-area">
             <!-- Stats -->
             <div class="row g-4 mb-4">
-                <div class="col-md-3"><div class="stats-card"><i class="fas fa-users fa-2x text-primary mb-2"></i><h3>150</h3><p class="mb-0">Total Donors</p></div></div>
-                <div class="col-md-3"><div class="stats-card"><i class="fas fa-calendar-check fa-2x text-primary mb-2"></i><h3>45</h3><p class="mb-0">Appointments Today</p></div></div>
-                <div class="col-md-3"><div class="stats-card"><i class="fas fa-user-plus fa-2x text-primary mb-2"></i><h3>12</h3><p class="mb-0">New Donors This Week</p></div></div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-user-check fa-2x text-primary mb-2"></i>
+                        <h3 th:text="${totalRegisteredDonors}">0</h3>
+                        <p class="mb-0">Registered Donors</p>
+                    </div>
+                </div>
+                <div class="col-md-3"><div class="stats-card"><i class="fas fa-calendar-check fa-2x text-primary mb-2"></i><h3>45</h3><p class="mb-0">Total Appointments</p></div></div>
                 <div class="col-md-3"><div class="stats-card"><i class="fas fa-clock fa-2x text-primary mb-2"></i><h3>8</h3><p class="mb-0">Pending Appointments</p></div></div>
             </div>
 

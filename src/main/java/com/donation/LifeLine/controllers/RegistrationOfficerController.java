@@ -13,7 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import com.donation.LifeLine.model.UnregisterdDonor;
 import java.util.List;
 import java.util.Set;
 
@@ -44,8 +44,11 @@ public class RegistrationOfficerController {
         List<UnregisterdDonor> registeredDonors = donorRepository
                 .findByIsRegisteredTrue();
 
+        long totalRegisteredDonors = donorRepository.countByIsRegisteredTrue();
+
         model.addAttribute("approvedDonors", approvedDonors);
         model.addAttribute("registeredDonors", registeredDonors);
+        model.addAttribute("totalRegisteredDonors", totalRegisteredDonors);
         return "DonorRegistrationOfficer/registration-officer-dashboard";
     }
 
