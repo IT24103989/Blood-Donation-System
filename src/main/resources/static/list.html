@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Donation History</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<!-- Navbar -->
+<div class="navbar">
+  <h1>LifeLine Blood Donation System</h1>
+  <div class="menu">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="list.html" class="active">Donations</a>
+    <a href="report.html">Reports</a>
+    <a href="logout.html">Logout</a>
+  </div>
+</div>
+
+<h2 class="page-title">Donation History</h2>
+
+<div class="tabs">
+  <button onclick="window.location='create.html'">New Donation</button>
+  <button class="active">Track Donations</button>
+</div>
+
+<div class="card">
+  <div style="margin-bottom:15px;">
+    <input id="filterNic" placeholder="Filter by Donor NIC" style="width:250px;">
+    <button class="btn btn-view" id="btnFilter">Search</button>
+    <button class="btn btn-cancel" id="btnAll">Reset</button>
+  </div>
+
+  <table id="tbl">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Donor NIC</th>
+      <th>Donor Name</th>
+      <th>Date</th>
+      <th>Location</th>
+      <th>Hemoglobin</th>
+      <th>Medical Officer</th>
+      <th>Notes</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+  async function load(nic) {
+    const q = nic ? ('?donorNIC=' + encodeURIComponent(nic)) : '';
+    const res = await fetch('/api/donation-history' + q);
+    const data = await res.json();
+    const tbody = document.querySelector('#tbl tbody');
+    tbody.innerHTML = '';
+    data.forEach(d => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${d.id}</td>
+        <td>${d.donorNIC}</td>
+        <td>${d.donorName}</td>
+        <td>${d.donationDate || ''}</td>
+        <td>${d.donationLocation || ''}</td>
+        <td>${d.hemoglobinLevel || ''}</td>
+        <td>${d.medicalOfficer || ''}</td>
+        <td>${(d.notes || '').slice(0, 40)}</td>
+        <td>
+          <button data-id="${d.id}" class="btn btn-view edit">Edit</button>
+          <button data-id="${d.id}" class="btn btn-cancel del">Delete</button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById('btnFilter').addEventListener('click', () => {
+    load(document.getElementById('filterNic').value);
+  });
+
+  document.getElementById('btnAll').addEventListener('click', () => {
+    document.getElementById('filterNic').value = '';
+    load();
+  });
+
+  document.querySelector('#tbl').addEventListener('click', async function(e) {
+    if (e.target.classList.contains('del')) {
+      const id = e.target.dataset.id;
+      if (!confirm('Delete record with ID ' + id + '?')) return;
+      await fetch('/api/donation-history/' + id, { method: 'DELETE' });
+      load(document.getElementById('filterNic').value);
+    }
+    if (e.target.classList.contains('edit')) {
+      const id = e.target.dataset.id;
+      window.location = 'edit.html?id=' + id;
+    }
+  });
+
+  load();
+</script>
+</body>
+</html>

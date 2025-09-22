@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Donor Reports</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<!-- Navbar -->
+<div class="navbar">
+  <h1>LifeLine Blood Donation System</h1>
+  <div class="menu">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="list.html">Donations</a>
+    <a href="report.html" class="active">Reports</a>
+    <a href="logout.html">Logout</a>
+  </div>
+</div>
+
+<!-- Page Title -->
+<h2 class="page-title">Donor Frequency Report</h2>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="active">Donor Frequency</button>
+  <button onclick="window.location='list.html'">Back to Donations</button>
+</div>
+
+<!-- Card -->
+<div class="card">
+  <form id="filterForm" style="margin-bottom:15px;">
+    <label>From: <input type="date" id="from"></label>
+    <label>To: <input type="date" id="to"></label>
+    <label>Min Donations: <input type="number" id="minDonations" min="1" style="width:80px;"></label>
+    <button class="btn btn-view" type="submit">Generate</button>
+    <button class="btn btn-save" type="button" id="btnExport">Export CSV</button>
+  </form>
+
+  <table id="tbl">
+    <thead>
+    <tr>
+      <th>Donor NIC</th>
+      <th>Donor Name</th>
+      <th>Donation Count</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+  async function loadReport() {
+    const from = document.getElementById('from').value;
+    const to = document.getElementById('to').value;
+    const minDonations = document.getElementById('minDonations').value;
+
+    const params = new URLSearchParams();
+    if (from) params.append('from', from);
+    if (to) params.append('to', to);
+    if (minDonations) params.append('minDonations', minDonations);
+
+    const res = await fetch('/api/reports/donor-frequency?' + params.toString());
+    const data = await res.json();
+    const tbody = document.querySelector('#tbl tbody');
+    tbody.innerHTML = '';
+    data.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.donorNIC}</td>
+        <td>${r.donorName}</td>
+        <td>${r.donationCount}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById('filterForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    loadReport();
+  });
+
+  document.getElementById('btnExport').addEventListener('click', () => {
+    const from = document.getElementById('from').value;
+    const to = document.getElementById('to').value;
+    const minDonations = document.getElementById('minDonations').value;
+
+    const params = new URLSearchParams();
+    if (from) params.append('from', from);
+    if (to) params.append('to', to);
+    if (minDonations) params.append('minDonations', minDonations);
+
+    window.location = '/api/reports/donor-frequency/export?' + params.toString();
+  });
+
+  // Load initial report
+  loadReport();
+</script>
+</body>
+</html>
