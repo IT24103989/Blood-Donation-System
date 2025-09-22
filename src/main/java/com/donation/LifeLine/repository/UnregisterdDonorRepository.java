@@ -16,4 +16,10 @@ public interface UnregisterdDonorRepository extends JpaRepository<UnregisterdDon
 
     List<UnregisterdDonor> findByIsRegisteredTrue();
 
+
+
+
+
+
+
 }

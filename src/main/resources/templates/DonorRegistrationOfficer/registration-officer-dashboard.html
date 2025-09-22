@@ -193,9 +193,10 @@
                             </div>
 
                             <!-- Registered Donors -->
+                            <!-- Registered Donors -->
                             <div class="tab-pane fade" id="registered-donors" role="tabpanel">
                                 <div class="table-responsive">
-                                    <table class="table" id="registeredDonorsTable">
+                                    <table class="table table-sm" id="registeredDonorsTable">
                                         <thead>
                                         <tr>
                                             <th>ID</th>
@@ -234,15 +235,24 @@
                                             <td th:text="${donor.chronicConditionDetails}"></td>
                                             <td><span class="badge bg-info">Registered</span></td>
                                             <td>
-                                                <button class="btn btn-sm btn-primary me-1">Edit</button>
-                                                <button class="btn btn-sm btn-danger">Delete</button>
-                                            </td>
+                                                <!-- Edit: goes to server-rendered edit page (GET) -->
+                                                <a th:href="@{/registration-officer/donors/edit/{id}(id=${donor.id})}"
+                                                   class="btn btn-sm btn-primary me-1">Edit</a>
 
+                                                <!-- Delete: normal form POST (no JS). Include CSRF token. -->
+                                                <form th:action="@{/registration-officer/donors/delete/{id}(id=${donor.id})}"
+                                                      method="post" style="display:inline">
+                                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                            onclick="return confirm('Delete this donor?');">Delete</button>
+                                                </form>
+                                            </td>
                                         </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
+
                             <div class="tab-pane fade" id="create-appointment" role="tabpanel">
                                 <form id="appointmentForm">
                                     <div class="row g-3">
