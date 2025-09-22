@@ -14,6 +14,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.donation.LifeLine.model.UnregisterdDonor;
+
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -121,17 +124,38 @@ public class RegistrationOfficerController {
     }
 
 
-    /* ---------- DELETE (POST) ---------- */
+//    /* ---------- DELETE (POST) ---------- */
+//    @PostMapping("/donors/delete/{id}")
+//    public String deleteDonor(@PathVariable Long id, RedirectAttributes ra) {
+//        if (!donorRepository.existsById(id)) {
+//            ra.addFlashAttribute("error", "Donor not found");
+//            return "redirect:/registration-officer/dashboard";
+//        }
+//        donorRepository.deleteById(id);
+//        ra.addFlashAttribute("success", "Donor deleted");
+//        return "redirect:/registration-officer/dashboard";
+//    }
+
+    /* ---------- DELETE DONOR (POST) ---------- */
     @PostMapping("/donors/delete/{id}")
     public String deleteDonor(@PathVariable Long id, RedirectAttributes ra) {
-        if (!donorRepository.existsById(id)) {
+        // Check donor exists
+        UnregisterdDonor donor = donorRepository.findById(id).orElse(null);
+
+        if (donor == null) {
             ra.addFlashAttribute("error", "Donor not found");
             return "redirect:/registration-officer/dashboard";
         }
-        donorRepository.deleteById(id);
-        ra.addFlashAttribute("success", "Donor deleted");
+
+        // First delete donor record
+        donorRepository.delete(donor);
+
+
+        ra.addFlashAttribute("success", "Donor and user account deleted successfully");
         return "redirect:/registration-officer/dashboard";
     }
+
+
 
     // Register approved donor as system user
     @PostMapping("/register-donor")
@@ -152,8 +176,9 @@ public class RegistrationOfficerController {
         user.setPassword(donor.getPassword()); // reuse existing password
         Role donorRole = roleRepository.findByName(Role.ERole.ROLE_DONOR)
                 .orElseThrow(() -> new RuntimeException("ROLE_DONOR not found"));
-        user.setRoles(Set.of(donorRole));
+        user.setRoles(new HashSet<>(Collections.singletonList(donorRole)));
         userRepository.save(user);
+        donor.setUser(user);
         donor.setIsRegistered(true);
         donorRepository.save(donor);
 
