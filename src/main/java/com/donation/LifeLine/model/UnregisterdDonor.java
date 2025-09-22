@@ -44,4 +44,10 @@ public class UnregisterdDonor {
     @Column(nullable = false)
     private Boolean isRegistered = false;
 
+    // UnregisterdDonor.java
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+
 }

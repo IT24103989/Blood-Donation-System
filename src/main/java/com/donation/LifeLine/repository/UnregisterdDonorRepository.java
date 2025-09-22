@@ -1,10 +1,13 @@
 package com.donation.LifeLine.repository;
 
 import com.donation.LifeLine.model.UnregisterdDonor;
+import com.donation.LifeLine.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UnregisterdDonorRepository extends JpaRepository<UnregisterdDonor, Long> {
@@ -19,8 +22,8 @@ public interface UnregisterdDonorRepository extends JpaRepository<UnregisterdDon
     long countByIsRegisteredTrue();
 
 
-
-
+    Optional<UnregisterdDonor> findByNic(String nic);
+    Optional<UnregisterdDonor> findByUser(User user);
 
 
 
