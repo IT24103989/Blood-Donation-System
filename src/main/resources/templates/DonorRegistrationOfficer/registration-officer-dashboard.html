@@ -77,9 +77,14 @@
         <div class="col-md-9 col-lg-10 content-area">
             <!-- Stats -->
             <div class="row g-4 mb-4">
-                <div class="col-md-3"><div class="stats-card"><i class="fas fa-users fa-2x text-primary mb-2"></i><h3>150</h3><p class="mb-0">Total Donors</p></div></div>
-                <div class="col-md-3"><div class="stats-card"><i class="fas fa-calendar-check fa-2x text-primary mb-2"></i><h3>45</h3><p class="mb-0">Appointments Today</p></div></div>
-                <div class="col-md-3"><div class="stats-card"><i class="fas fa-user-plus fa-2x text-primary mb-2"></i><h3>12</h3><p class="mb-0">New Donors This Week</p></div></div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-user-check fa-2x text-primary mb-2"></i>
+                        <h3 th:text="${totalRegisteredDonors}">0</h3>
+                        <p class="mb-0">Registered Donors</p>
+                    </div>
+                </div>
+                <div class="col-md-3"><div class="stats-card"><i class="fas fa-calendar-check fa-2x text-primary mb-2"></i><h3>45</h3><p class="mb-0">Total Appointments</p></div></div>
                 <div class="col-md-3"><div class="stats-card"><i class="fas fa-clock fa-2x text-primary mb-2"></i><h3>8</h3><p class="mb-0">Pending Appointments</p></div></div>
             </div>
 
@@ -93,14 +98,7 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="registered-donors-tab" data-bs-toggle="tab" data-bs-target="#registered-donors" type="button">Registered Donors</button>
                             </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="create-appointment-tab" data-bs-toggle="tab"
-                                        data-bs-target="#create-appointment" type="button">Create Appointment</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="appointments-tab" data-bs-toggle="tab"
-                                        data-bs-target="#appointments" type="button">Appointments</button>
-                            </li>
+                            ////////////// Create Appointment Tab //////////////
                         </ul>
 
                         <div class="tab-content mt-4" id="myTabContent">
@@ -192,10 +190,11 @@
                                 </div>
                             </div>
 
+
                             <!-- Registered Donors -->
                             <div class="tab-pane fade" id="registered-donors" role="tabpanel">
                                 <div class="table-responsive">
-                                    <table class="table" id="registeredDonorsTable">
+                                    <table class="table table-sm" id="registeredDonorsTable">
                                         <thead>
                                         <tr>
                                             <th>ID</th>
@@ -234,87 +233,24 @@
                                             <td th:text="${donor.chronicConditionDetails}"></td>
                                             <td><span class="badge bg-info">Registered</span></td>
                                             <td>
-                                                <button class="btn btn-sm btn-primary me-1">Edit</button>
-                                                <button class="btn btn-sm btn-danger">Delete</button>
-                                            </td>
+                                                <!-- Edit: goes to server-rendered edit page (GET) -->
+                                                <a th:href="@{/registration-officer/donors/edit/{id}(id=${donor.id})}"
+                                                   class="btn btn-sm btn-primary me-1">Edit</a>
 
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="create-appointment" role="tabpanel">
-                                <form id="appointmentForm">
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Select Donor</label>
-                                            <select class="form-select" required>
-                                                <option value="">Choose Donor</option>
-                                                <option>John Doe (A+)</option>
-                                                <option>Jane Smith (O-)</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Appointment Date</label>
-                                            <input type="date" class="form-control" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Time Slot</label>
-                                            <select class="form-select" required>
-                                                <option value="">Select Time</option>
-                                                <option>09:00 AM</option>
-                                                <option>10:00 AM</option>
-                                                <option>11:00 AM</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Location</label>
-                                            <select class="form-select" required>
-                                                <option value="">Select Location</option>
-                                                <option>Main Center</option>
-                                                <option>City Branch</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label">Notes</label>
-                                            <textarea class="form-control" rows="3"></textarea>
-                                        </div>
-                                        <div class="col-12">
-                                            <button type="submit" class="btn btn-primary">Schedule Appointment</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="tab-pane fade" id="appointments" role="tabpanel">
-                                <div class="table-responsive">
-                                    <table class="table" id="appointmentsTable">
-                                        <thead>
-                                        <tr>
-                                            <th>Donor Name</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Location</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td>Jane Smith</td>
-                                            <td>2025-09-25</td>
-                                            <td>10:00 AM</td>
-                                            <td>Main Center</td>
-                                            <td><span class="badge bg-warning">Pending</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-primary me-1">Edit</button>
-                                                <button class="btn btn-sm btn-danger">Delete</button>
+                                                <!-- Delete: normal form POST (no JS). Include CSRF token. -->
+                                                <form th:action="@{/registration-officer/donors/delete/{id}(id=${donor.id})}"
+                                                      method="post" style="display:inline">
+                                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                            onclick="return confirm('Delete this donor?');">Delete</button>
+                                                </form>
                                             </td>
                                         </tr>
-                                        <!-- More rows -->
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
+                            ////////////// Create Appointment Tab & ect //////////////
                         </div> <!-- tab-content -->
                     </div>
                 </div>

@@ -111,8 +111,9 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle"></i> John Doe
+                        <i class="fas fa-user-circle"></i> <span th:text="${donor.username}">Donor Name</span>
                     </a>
+
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li><a class="dropdown-item" href="#">Settings</a></li>
@@ -139,9 +140,10 @@
                 <a href="#" class="btn btn-outline-secondary mb-2">
                     <i class="fas fa-history me-2"></i> Donation History
                 </a>
-                <a href="#" class="btn btn-outline-secondary mb-2">
+                <a href="/donor/profile" class="btn btn-outline-secondary mb-2">
                     <i class="fas fa-user me-2"></i> Profile
                 </a>
+
                 <a href="#" class="btn btn-outline-secondary mb-2">
                     <i class="fas fa-cog me-2"></i> Settings
                 </a>
@@ -155,15 +157,12 @@
                 <div class="col-12">
                     <div class="dashboard-card p-4 bg-white">
                         <div class="row align-items-center">
-                            <div class="col-md-3 text-center">
-                                <img src="https://via.placeholder.com/150" alt="Profile" class="profile-image mb-3">
-                            </div>
+
                             <div class="col-md-9">
-                                <h3>John Doe</h3>
-                                <p class="text-muted mb-2">Blood Type: A+</p>
-                                <p class="text-muted mb-2">Email: john.doe@example.com</p>
-                                <p class="text-muted mb-3">Phone: +94 77 123 4567</p>
-                                <button class="btn btn-primary">Edit Profile</button>
+                                <h3 th:text="${donor.username}">Donor Name</h3>
+<!--                                <p class="text-muted mb-2">Blood Type: <span th:text="${donor.bloodGroup}">A+</span></p>-->
+<!--                                <p class="text-muted mb-2">Email: <span th:text="${donor.email}">donor@example.com</span></p>-->
+<!--                                <p class="text-muted mb-3">Phone: <span th:text="${donor.phone}">+94 77 123 4567</span></p>-->
                             </div>
                         </div>
                     </div>

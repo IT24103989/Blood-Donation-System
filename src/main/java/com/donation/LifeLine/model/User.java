@@ -30,5 +30,10 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
+    // User.java
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UnregisterdDonor donorDetails;
+
+
 
 }

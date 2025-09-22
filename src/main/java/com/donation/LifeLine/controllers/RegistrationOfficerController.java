@@ -8,14 +8,12 @@ import com.donation.LifeLine.repository.UnregisterdDonorRepository;
 import com.donation.LifeLine.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import com.donation.LifeLine.model.UnregisterdDonor;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +31,9 @@ public class RegistrationOfficerController {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
 
     @GetMapping("/dashboard")
@@ -43,9 +44,93 @@ public class RegistrationOfficerController {
         List<UnregisterdDonor> registeredDonors = donorRepository
                 .findByIsRegisteredTrue();
 
+        long totalRegisteredDonors = donorRepository.countByIsRegisteredTrue();
+
         model.addAttribute("approvedDonors", approvedDonors);
         model.addAttribute("registeredDonors", registeredDonors);
+        model.addAttribute("totalRegisteredDonors", totalRegisteredDonors);
         return "DonorRegistrationOfficer/registration-officer-dashboard";
+    }
+
+    /* ---------- EDIT (GET) ---------- */
+    @GetMapping("/donors/edit/{id}")
+    public String editDonorForm(@PathVariable Long id, Model model, RedirectAttributes ra) {
+        UnregisterdDonor donor = donorRepository.findById(id).orElse(null);
+        if (donor == null) {
+            ra.addFlashAttribute("error", "Donor not found");
+            return "redirect:/registration-officer/dashboard";
+        }
+        model.addAttribute("donor", donor);
+        return "DonorRegistrationOfficer/edit-donor";
+    }
+
+    /* ---------- UPDATE (POST) ---------- */
+    @PostMapping("/donors/update")
+    public String updateDonor(@ModelAttribute("donor") UnregisterdDonor formDonor,
+                              @RequestParam(name = "plainPassword", required = false) String plainPassword,
+                              RedirectAttributes ra) {
+
+        UnregisterdDonor donor = donorRepository.findById(formDonor.getId())
+                .orElseThrow(() -> new RuntimeException("Donor not found"));
+
+        // NIC uniqueness check if changed
+        String newNic = formDonor.getNic();
+        if (!donor.getNic().equals(newNic)) {
+            if (donorRepository.existsByNic(newNic) || userRepository.existsByUsername(newNic)) {
+                ra.addFlashAttribute("error", "NIC already in use");
+                return "redirect:/registration-officer/donors/edit/" + donor.getId();
+            }
+        }
+
+        // copy editable fields
+        donor.setFullName(formDonor.getFullName());
+        donor.setNic(formDonor.getNic());
+        donor.setAddress(formDonor.getAddress());
+        donor.setBloodGroup(formDonor.getBloodGroup());
+        donor.setWeight(formDonor.getWeight());
+        donor.setTravelHistory(formDonor.getTravelHistory());
+        donor.setDateOfBirth(formDonor.getDateOfBirth());
+        donor.setHasRecentFeverOrFlu(formDonor.getHasRecentFeverOrFlu());
+        donor.setIsTakingMedications(formDonor.getIsTakingMedications());
+        donor.setHadRecentSurgeryOrTattoo(formDonor.getHadRecentSurgeryOrTattoo());
+        donor.setHasChronicConditions(formDonor.getHasChronicConditions());
+        donor.setMedicationDetails(formDonor.getMedicationDetails());
+        donor.setChronicConditionDetails(formDonor.getChronicConditionDetails());
+
+        // handle password
+        if (plainPassword != null && !plainPassword.trim().isEmpty()) {
+            donor.setPassword(passwordEncoder.encode(plainPassword));
+        }
+
+        donorRepository.save(donor);
+
+        // 🔑 Sync to User table if already registered
+        if (donor.getIsRegistered()) {
+            User user = userRepository.findByUsername(donor.getNic())
+                    .orElseThrow(() -> new RuntimeException("User not found for donor"));
+
+            user.setUsername(donor.getNic()); // in case NIC was updated
+            if (plainPassword != null && !plainPassword.trim().isEmpty()) {
+                user.setPassword(donor.getPassword()); // already encoded
+            }
+            userRepository.save(user);
+        }
+
+        ra.addFlashAttribute("success", "Donor updated successfully");
+        return "redirect:/registration-officer/dashboard";
+    }
+
+
+    /* ---------- DELETE (POST) ---------- */
+    @PostMapping("/donors/delete/{id}")
+    public String deleteDonor(@PathVariable Long id, RedirectAttributes ra) {
+        if (!donorRepository.existsById(id)) {
+            ra.addFlashAttribute("error", "Donor not found");
+            return "redirect:/registration-officer/dashboard";
+        }
+        donorRepository.deleteById(id);
+        ra.addFlashAttribute("success", "Donor deleted");
+        return "redirect:/registration-officer/dashboard";
     }
 
     // Register approved donor as system user
