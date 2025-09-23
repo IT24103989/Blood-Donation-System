@@ -30,8 +30,7 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-    // User.java
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private UnregisterdDonor donorDetails;
 
 
