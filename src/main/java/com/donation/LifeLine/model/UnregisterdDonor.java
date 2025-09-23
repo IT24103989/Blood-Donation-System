@@ -45,7 +45,7 @@ public class UnregisterdDonor {
     private Boolean isRegistered = false;
 
     // UnregisterdDonor.java
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
