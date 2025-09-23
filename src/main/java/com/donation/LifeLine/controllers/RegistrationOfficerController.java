@@ -1,13 +1,14 @@
 package com.donation.LifeLine.controllers;
 
-import com.donation.LifeLine.model.Role;
-import com.donation.LifeLine.model.UnregisterdDonor;
-import com.donation.LifeLine.model.User;
+import com.donation.LifeLine.model.*;
+import com.donation.LifeLine.repository.AppointmentRepository;
 import com.donation.LifeLine.repository.RoleRepository;
 import com.donation.LifeLine.repository.UnregisterdDonorRepository;
 import com.donation.LifeLine.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.donation.LifeLine.model.UnregisterdDonor;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 @RequestMapping("/registration-officer")
@@ -37,35 +35,52 @@ public class RegistrationOfficerController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AppointmentRepository appointmentRepository;
+
 
 
     @GetMapping("/dashboard")
-    public String registrationOfficerDashboard(Model model) {
+    public String registrationOfficerDashboard(Model model, Authentication authentication) {
         // Get all approved donors
         List<UnregisterdDonor> approvedDonors = donorRepository
                 .findByIsApprovedTrueAndIsRejectedFalseAndIsRegisteredFalse();
+
         List<UnregisterdDonor> registeredDonors = donorRepository
                 .findByIsRegisteredTrue();
 
-        long totalRegisteredDonors = donorRepository.countByIsRegisteredTrue();
+       String username = ((UserDetails) authentication.getPrincipal()).getUsername();
 
+
+        User officer = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Officer not found"));
+
+
+        long totalRegisteredDonors = donorRepository.countByIsRegisteredTrue();
+        long totalAppointments = appointmentRepository.count();
+
+        List<Appointment> appointments = appointmentRepository.findAll();
+        model.addAttribute("appointments", appointments);
+        model.addAttribute("officerName", officer.getUsername());
         model.addAttribute("approvedDonors", approvedDonors);
         model.addAttribute("registeredDonors", registeredDonors);
         model.addAttribute("totalRegisteredDonors", totalRegisteredDonors);
+        model.addAttribute("TotalAppointments", totalAppointments);
+        model.addAttribute("OfficerName"); // Placeholder, replace with actual name if available
         return "DonorRegistrationOfficer/registration-officer-dashboard";
     }
 
-    /* ---------- EDIT (GET) ---------- */
-    @GetMapping("/donors/edit/{id}")
-    public String editDonorForm(@PathVariable Long id, Model model, RedirectAttributes ra) {
-        UnregisterdDonor donor = donorRepository.findById(id).orElse(null);
-        if (donor == null) {
-            ra.addFlashAttribute("error", "Donor not found");
-            return "redirect:/registration-officer/dashboard";
-        }
-        model.addAttribute("donor", donor);
-        return "DonorRegistrationOfficer/edit-donor";
-    }
+//    /* ---------- EDIT (GET) ---------- */
+//    @GetMapping("/donors/edit/{id}")
+//    public String editDonorForm(@PathVariable Long id, Model model, RedirectAttributes ra) {
+//        UnregisterdDonor donor = donorRepository.findById(id).orElse(null);
+//        if (donor == null) {
+//            ra.addFlashAttribute("error", "Donor not found");
+//            return "redirect:/registration-officer/dashboard";
+//        }
+//        model.addAttribute("donor", donor);
+//        return "DonorRegistrationOfficer/edit-donor";
+//    }
 
     /* ---------- UPDATE (POST) ---------- */
     @PostMapping("/donors/update")
@@ -122,19 +137,6 @@ public class RegistrationOfficerController {
         ra.addFlashAttribute("success", "Donor updated successfully");
         return "redirect:/registration-officer/dashboard";
     }
-
-
-//    /* ---------- DELETE (POST) ---------- */
-//    @PostMapping("/donors/delete/{id}")
-//    public String deleteDonor(@PathVariable Long id, RedirectAttributes ra) {
-//        if (!donorRepository.existsById(id)) {
-//            ra.addFlashAttribute("error", "Donor not found");
-//            return "redirect:/registration-officer/dashboard";
-//        }
-//        donorRepository.deleteById(id);
-//        ra.addFlashAttribute("success", "Donor deleted");
-//        return "redirect:/registration-officer/dashboard";
-//    }
 
     /* ---------- DELETE DONOR (POST) ---------- */
     @PostMapping("/donors/delete/{id}")

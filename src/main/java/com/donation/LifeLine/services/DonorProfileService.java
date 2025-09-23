@@ -40,5 +40,12 @@ public class DonorProfileService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+    // Fetch donor by userId
+    public UnregisterdDonor getDonorByUserId(Long userId) {
+        return donorRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Donor not found for userId: " + userId));
+    }
+
+
 }
 

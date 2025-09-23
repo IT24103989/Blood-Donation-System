@@ -98,13 +98,11 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown">
-                        <i class="fas fa-user-md"></i> <span th:text="${advisorName}">Dr. Sarah Johnson</span>
+                        <i class="fas fa-user-md"></i> <span th:text="${advisorName}"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/profile}">Profile</a></li>
-                        <li><a class="dropdown-item" th:href="@{/settings}">Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
+                        <li><a class="dropdown-item" href="/">Logout</a></li>
                     </ul>
                 </li>
             </ul>
@@ -142,9 +140,6 @@
                 <div class="col-12">
                     <div class="dashboard-card p-4 bg-white">
                         <div class="row align-items-center">
-<!--                            <div class="col-md-2 text-center">-->
-<!--                                <img th:src="@{/images/profile.png}" alt="Profile" class="profile-image mb-3">-->
-<!--                            </div>-->
                             <div class="col-md-6">
                                 <h3><span th:text="${advisor.username}"></span></h3>
                                 <p class="text-muted mb-2">Medical Adviser</p>

@@ -1,7 +1,6 @@
 package com.donation.LifeLine.repository;
 
 import com.donation.LifeLine.model.UnregisterdDonor;
-import com.donation.LifeLine.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,8 +22,5 @@ public interface UnregisterdDonorRepository extends JpaRepository<UnregisterdDon
 
 
     Optional<UnregisterdDonor> findByNic(String nic);
-    Optional<UnregisterdDonor> findByUser(User user);
-
-
-
+    Optional<UnregisterdDonor> findByUserId(Long userId);
 }
