@@ -21,7 +21,9 @@ public class Role {
         ROLE_DONOR,
         ROLE_REGISTRATION_OFFICER,
         ROLE_MEDICAL_ADVISER,
-        ROLE_ADMIN
+        ROLE_ADMIN,
+        ROLE_COORDINATOR
+
     }
 
 
