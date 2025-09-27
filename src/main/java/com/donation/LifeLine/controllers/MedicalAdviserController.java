@@ -48,12 +48,17 @@ public class MedicalAdviserController {
                 .filter(d -> !d.getIsApproved() && !d.getIsRejected())
                 .count();
 
+        long TotalApprovals = donors.stream()
+                .filter(d -> d.getIsApproved() && !d.getIsRejected())
+                .count();
+
 
         model.addAttribute("advisor", advisor);               // Full advisor object
         model.addAttribute("advisorName", advisor.getUsername()); // For nav dropdown
         model.addAttribute("advisorId", advisor.getId());     // For dashboard ID
         model.addAttribute("lastLogin", "2025-09-20 07:00 AM"); // You can fetch real last login if stored
         model.addAttribute("pendingApprovals", pendingApprovals);
+        model.addAttribute("TotalApprovals", TotalApprovals);
 
         return "MedicalAdviser/medical-adviser-dashboard";
     }
