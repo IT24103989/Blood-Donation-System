@@ -4,6 +4,8 @@ import jakarta.persistence.*; // or use javax.persistence.* depending on your se
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "unregistered_donor")  // Optional: customize table name
 @Getter
@@ -49,5 +51,6 @@ public class UnregisterdDonor {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-
+    @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Appointment> appointments;
 }
