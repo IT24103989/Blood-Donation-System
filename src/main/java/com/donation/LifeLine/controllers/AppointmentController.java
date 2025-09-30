@@ -26,6 +26,31 @@ public class AppointmentController {
     }
 
 
+
+    // Save appointment
+    @PostMapping("/save")
+    public String saveAppointment(@RequestParam Long donorId,
+                                  @RequestParam("appointmentDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                  @RequestParam String timeSlot,
+                                  @RequestParam String location,
+                                  @RequestParam(required = false) String notes)
+
+    {
+        UnregisterdDonor donor = donorRepository.findById(donorId)
+                .orElseThrow(() -> new RuntimeException("Donor not found"));
+
+        Appointment appointment = new Appointment();
+        appointment.setDonor(donor);
+        appointment.setAppointmentDate(date);
+        appointment.setTimeSlot(timeSlot);
+        appointment.setLocation(location);
+        appointment.setNotes(notes);
+
+        appointmentRepository.save(appointment);
+        return "redirect:/registration-officer/dashboard";
+    }
+
+
     @GetMapping("/donor/{id}/dashboard")
     public String donorDashboard(@PathVariable Long id, Model model) {
         UnregisterdDonor donor = donorRepository.findById(id)
