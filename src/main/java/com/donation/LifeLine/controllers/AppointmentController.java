@@ -50,6 +50,48 @@ public class AppointmentController {
         return "redirect:/registration-officer/dashboard";
     }
 
+    // Show edit form
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        model.addAttribute("appointment", appointment);
+        model.addAttribute("registeredDonors", donorRepository.findAll());
+        return "DonorRegistrationOfficer/edit-appointment"; // a new template
+    }
+
+    // Update appointment
+    @PostMapping("/update/{id}")
+    public String updateAppointment(@PathVariable Long id,
+                                    @RequestParam Long donorId,
+                                    @RequestParam("appointmentDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                    @RequestParam String timeSlot,
+                                    @RequestParam String location,
+                                    @RequestParam(required = false) String notes) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        UnregisterdDonor donor = donorRepository.findById(donorId)
+                .orElseThrow(() -> new RuntimeException("Donor not found"));
+
+        appointment.setDonor(donor);
+        appointment.setAppointmentDate(date);
+        appointment.setTimeSlot(timeSlot);
+        appointment.setLocation(location);
+        appointment.setNotes(notes);
+
+
+        appointmentRepository.save(appointment);
+        return "redirect:/registration-officer/dashboard";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteAppointment(@PathVariable Long id) {
+        appointmentRepository.deleteById(id);
+        return "redirect:/registration-officer/dashboard";
+    }
+
 
     @GetMapping("/donor/{id}/dashboard")
     public String donorDashboard(@PathVariable Long id, Model model) {
