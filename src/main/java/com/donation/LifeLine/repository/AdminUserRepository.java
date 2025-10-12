@@ -1,6 +1,6 @@
-package finalice.project.finalice.project.repository;
+package com.donation.LifeLine.repository;
 
-import finalice.project.finalice.project.domain.AdminUser;
+import com.donation.LifeLine.model.AdminUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
