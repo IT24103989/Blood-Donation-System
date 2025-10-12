@@ -1,62 +1,69 @@
-package finalice.project.finalice.project.controller;
+package com.donation.LifeLine.controllers;
 
-import finalice.project.finalice.project.domain.AdminUser;
-import finalice.project.finalice.project.service.AdminUserService;
+import com.donation.LifeLine.model.AdminUser;
+import com.donation.LifeLine.services.AdminUserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
 
 import java.net.URI;
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/admin/users")
+@Controller // NOTE: Controller, not RestController
+@RequestMapping("/admin")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminUserController {
+
     private final AdminUserService adminUserService;
 
     public AdminUserController(AdminUserService adminUserService) {
         this.adminUserService = adminUserService;
     }
 
-    @GetMapping
-    public List<AdminUser> list() { return adminUserService.listAll(); }
+    /** Thymeleaf dashboard page */
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "Admin/admin-dashboard"; // Thymeleaf template in src/main/resources/templates/
+    }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AdminUser> get(@PathVariable Long id) {
+    // --- REST API endpoints for JS ---
+
+    /** List all admin users */
+    @GetMapping("/api/users")
+    @ResponseBody
+    public List<AdminUser> listUsers() {
+        return adminUserService.listAll();
+    }
+
+    /** Get single user by ID */
+    @GetMapping("/api/users/{id}")
+    @ResponseBody
+    public ResponseEntity<AdminUser> getUser(@PathVariable Long id) {
         return adminUserService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    public static class CreateUserRequest {
-        @jakarta.validation.constraints.NotBlank public String username;
-        @jakarta.validation.constraints.Email @jakarta.validation.constraints.NotBlank public String email;
-        @jakarta.validation.constraints.NotBlank public String password;
-        public AdminUser.Role role = AdminUser.Role.MEDICAL_OFFICER;
-        public boolean active = true;
-    }
-
-    @PostMapping
-    public ResponseEntity<AdminUser> create(@Valid @RequestBody CreateUserRequest req) {
+    /** Create a new user */
+    @PostMapping("/api/users")
+    @ResponseBody
+    public ResponseEntity<AdminUser> createUser(@Valid @RequestBody CreateUserRequest req) {
         AdminUser user = new AdminUser();
         user.setUsername(req.username);
         user.setEmail(req.email);
         user.setRole(req.role);
         user.setActive(req.active);
         AdminUser saved = adminUserService.create(user, req.password);
-        return ResponseEntity.created(URI.create("/api/admin/users/" + saved.getId())).body(saved);
+        return ResponseEntity.created(URI.create("/admin/api/users/" + saved.getId())).body(saved);
     }
 
-    public static class UpdateUserRequest {
-        @jakarta.validation.constraints.NotBlank public String username;
-        @jakarta.validation.constraints.Email @jakarta.validation.constraints.NotBlank public String email;
-        public String password; // optional
-        public AdminUser.Role role;
-        public boolean active;
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<AdminUser> update(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest req) {
+    /** Update user */
+    @PutMapping("/api/users/{id}")
+    @ResponseBody
+    public ResponseEntity<AdminUser> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest req) {
         AdminUser toUpdate = new AdminUser();
         toUpdate.setUsername(req.username);
         toUpdate.setEmail(req.email);
@@ -66,10 +73,40 @@ public class AdminUserController {
         return ResponseEntity.ok(saved);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    /** Delete user */
+    @DeleteMapping("/api/users/{id}")
+    @ResponseBody
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         adminUserService.delete(id);
         return ResponseEntity.noContent().build();
     }
-}
 
+    // --- DTO classes ---
+    public static class CreateUserRequest {
+        @jakarta.validation.constraints.NotBlank
+        public String username;
+
+        @jakarta.validation.constraints.Email
+        @jakarta.validation.constraints.NotBlank
+        public String email;
+
+        @jakarta.validation.constraints.NotBlank
+        public String password;
+
+        public AdminUser.Role role = AdminUser.Role.MEDICAL_OFFICER;
+        public boolean active = true;
+    }
+
+    public static class UpdateUserRequest {
+        @jakarta.validation.constraints.NotBlank
+        public String username;
+
+        @jakarta.validation.constraints.Email
+        @jakarta.validation.constraints.NotBlank
+        public String email;
+
+        public String password; // optional
+        public AdminUser.Role role;
+        public boolean active;
+    }
+}
