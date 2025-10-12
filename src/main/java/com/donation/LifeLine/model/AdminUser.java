@@ -1,4 +1,4 @@
-package finalice.project.finalice.project.domain;
+package com.donation.LifeLine.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
