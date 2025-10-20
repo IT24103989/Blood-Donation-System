@@ -58,6 +58,9 @@ public class DonationHistoryService {
         return true;
     }
 
+
+
+
     public List<DonorFrequencyDTO> donorFrequencyReport(LocalDate from, LocalDate to, Long minDonations) {
         if (to == null) to = LocalDate.now();
         if (from == null) from = to.minusYears(1);
