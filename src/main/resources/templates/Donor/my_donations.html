@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Donation History</title>
+    <style>
+        body{ font-family: Arial, sans-serif; background:#f8f9fa; margin:0; padding:0; }
+        header{ background:#a30000; color:#fff; padding:1rem; text-align:center; font-weight:700; }
+        .container{ max-width:900px; margin:30px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+        table{ width:100%; border-collapse:collapse; margin-top:8px; }
+        th, td{ padding:10px; border-bottom:1px solid #eee; text-align:left; }
+        th{ background:#a30000; color:#fff; font-weight:600; }
+        .no-data{ text-align:center; color:#777; margin-top:16px; font-style:italic; }
+    </style>
+</head>
+<body>
+<header>My Donation History</header>
+<div class="container">
+    <h3 th:text="'Welcome, ' + ${donorName} + '!'">Welcome</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Amount (ml)</th>
+            <th>Notes</th>
+            <th>Location</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="d : ${donations}">
+            <td th:text="${#dates.format(d.donationDate,'yyyy-MM-dd')}"></td>
+            <td th:text="${d.amount}"></td>
+            <td th:text="${d.notes}"></td>
+            <td th:text="${d.location}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="no-data" th:if="${#lists.isEmpty(donations)}">You haven't donated blood yet.</p>
+</div>
+</body>
+</html>
