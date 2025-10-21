@@ -604,44 +604,38 @@
                 <div class="col-12">
                     <div class="dashboard-card p-4 bg-white">
                         <h4 class="section-header">
-                            <i class="fas fa-history"></i>Recent Donations
+                            <i class="fas fa-history"></i> Recent Donations
                         </h4>
+
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
                                 <tr>
                                     <th><i class="fas fa-calendar me-1"></i>Date</th>
                                     <th><i class="fas fa-map-marker-alt me-1"></i>Location</th>
-                                    <th><i class="fas fa-tint me-1"></i>Type</th>
-                                    <th><i class="fas fa-check-circle me-1"></i>Status</th>
+                                    <th><i class="fas fa-vial me-1"></i>Hemoglobin Level</th>
+                                    <th><i class="fas fa-sticky-note me-1"></i>Notes</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>Aug 15, 2025</td>
-                                    <td>Central Blood Bank</td>
-                                    <td>Whole Blood</td>
-                                    <td>
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check-circle me-1"></i>Completed
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>May 10, 2025</td>
-                                    <td>Mobile Camp - City Hall</td>
-                                    <td>Whole Blood</td>
-                                    <td>
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check-circle me-1"></i>Completed
-                                        </span>
-                                    </td>
+                                <!-- Dynamic donor history -->
+                                <tr th:each="d : ${donations}">
+                                    <td th:text="${#dates.format(d.donationDate, 'yyyy-MM-dd')}"></td>
+                                    <td th:text="${d.donationLocation}"></td>
+                                    <td th:text="${d.hemoglobinLevel != null ? d.hemoglobinLevel + ' g/dL' : '—'}"></td>
+                                    <td th:text="${d.notes}"></td>
                                 </tr>
                                 </tbody>
                             </table>
+
+                            <!-- Message when there are no donations -->
+                            <p class="no-data text-muted mt-2" th:if="${#lists.isEmpty(donations)}">
+                                You haven't donated blood yet.
+                            </p>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

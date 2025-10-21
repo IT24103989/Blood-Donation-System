@@ -7,6 +7,7 @@ import com.donation.LifeLine.repository.AppointmentRepository;
 import com.donation.LifeLine.repository.UnregisterdDonorRepository;
 import com.donation.LifeLine.repository.UserRepository;
 import com.donation.LifeLine.services.AppointmentService;
+import com.donation.LifeLine.services.DonationHistoryService;
 import com.donation.LifeLine.services.DonorProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +27,10 @@ public class DonorController {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private DonationHistoryService donationHistoryService;
+
 
     private final UserRepository userRepository;
     private final DonorProfileService donorProfileService;
@@ -58,13 +63,14 @@ public class DonorController {
 
         long totalAppointments = appointmentRepository.countByDonor(donor);
 
+        var donations = donationHistoryService.getByDonorNIC(donor.getNic());
 
 
-         model.addAttribute("totalAppointments", totalAppointments);
+        model.addAttribute("donations", donations);
+        model.addAttribute("totalAppointments", totalAppointments);
         model.addAttribute("appointments", appointments);
-
-
         model.addAttribute("donor", user);
+
         return "Donor/donor-dashboard"; // src/main/resources/templates/Donor/donor-dashboard.html
     }
 
