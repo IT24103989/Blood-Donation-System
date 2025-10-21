@@ -1,6 +1,7 @@
 package com.donation.LifeLine.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +21,8 @@ public class User {
     @Column(unique = true)
     private String username;
     private String password;
-
+    private String role;
+    @JsonIgnoreProperties("users")
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
