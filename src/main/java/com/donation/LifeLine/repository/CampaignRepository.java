@@ -1,6 +1,6 @@
-package finalice.project.finalice.project.repository;
+package com.donation.LifeLine.repository;
 
-import finalice.project.finalice.project.domain.Campaign;
+import com.donation.LifeLine.model.Campaign;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {

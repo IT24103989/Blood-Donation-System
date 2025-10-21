@@ -1,75 +1,123 @@
-package finalice.project.finalice.project.controller;
+package com.donation.LifeLine.controllers;
 
-import finalice.project.finalice.project.domain.AdminUser;
-import finalice.project.finalice.project.service.AdminUserService;
+import com.donation.LifeLine.model.AdminUser;
+import com.donation.LifeLine.model.DTO.UserRegistrationDTO;
+import com.donation.LifeLine.model.DonationHistory;
+import com.donation.LifeLine.model.User;
+import com.donation.LifeLine.services.AdminUserService;
+import com.donation.LifeLine.services.DonationHistoryService;
+import com.donation.LifeLine.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-@RestController
-@RequestMapping("/api/admin/users")
+@Controller
+@RequestMapping("/api/admin")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminUserController {
+
+    private final UserService userService;
+    private final DonationHistoryService donationHistoryService;
     private final AdminUserService adminUserService;
 
-    public AdminUserController(AdminUserService adminUserService) {
+    @Autowired
+    public AdminUserController(UserService userService, DonationHistoryService donationHistoryService, AdminUserService adminUserService) {
+        this.userService = userService;
+        this.donationHistoryService = donationHistoryService;
         this.adminUserService = adminUserService;
     }
+    // Thymeleaf dashboard page
 
-    @GetMapping
-    public List<AdminUser> list() { return adminUserService.listAll(); }
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "Admin/admin-dashboard"; // Thymeleaf template
+    }
+     // Create a new user in USERS table (returns plain text only)
+     @PostMapping("/users")
+     @ResponseBody
+     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest req) {
+         try {
+             // Prepare DTO
+             UserRegistrationDTO dto = new UserRegistrationDTO();
+             dto.setUsername(req.username);
+             dto.setPassword(req.password);
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AdminUser> get(@PathVariable Long id) {
-        return adminUserService.getById(id)
+             // Automatically add "ROLE_" prefix if missing
+             String roleName = req.role.startsWith("ROLE_") ? req.role : "ROLE_" + req.role;
+             dto.setRole(roleName);
+
+             // Save user
+             User user = userService.registerUser(dto);
+
+             // ✅ Return JSON response
+             Map<String, Object> response = new HashMap<>();
+             response.put("success", true);
+             response.put("message", "User created successfully");
+             response.put("userId", user.getId());
+             response.put("role", roleName);
+
+             return ResponseEntity.ok(response);
+
+         } catch (Exception e) {
+             Map<String, Object> error = new HashMap<>();
+             error.put("success", false);
+             error.put("message", "Error creating user: " + (e.getMessage() != null ? e.getMessage() : "Unknown error"));
+             return ResponseEntity.badRequest().body(error);
+         }
+     }
+
+   //load users
+    @GetMapping("/users")
+    @ResponseBody
+    public List<User> listUsers() {
+        return userService.listUsersWithRoles();
+    }
+
+    @GetMapping("/users/{id}")
+    @ResponseBody
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
+    //update user
+    @PutMapping("/users/{id}")
+    @ResponseBody
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserRegistrationDTO req) {
+        try {
+            AdminUser updatedUser = adminUserService.updateUser(id, req);
+            return ResponseEntity.ok(updatedUser); // Return full updated user object
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest()
+                    .body("Error updating user: " + e.getClass().getSimpleName() +
+                            (e.getMessage() != null ? " - " + e.getMessage() : ""));
+        }
+    }
+
+
+    // Delete user
+    @DeleteMapping("/users/{id}")
+    @ResponseBody
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok("User deleted successfully");
+    }
+
+
     public static class CreateUserRequest {
-        @jakarta.validation.constraints.NotBlank public String username;
-        @jakarta.validation.constraints.Email @jakarta.validation.constraints.NotBlank public String email;
-        @jakarta.validation.constraints.NotBlank public String password;
-        public AdminUser.Role role = AdminUser.Role.MEDICAL_OFFICER;
-        public boolean active = true;
-    }
-
-    @PostMapping
-    public ResponseEntity<AdminUser> create(@Valid @RequestBody CreateUserRequest req) {
-        AdminUser user = new AdminUser();
-        user.setUsername(req.username);
-        user.setEmail(req.email);
-        user.setRole(req.role);
-        user.setActive(req.active);
-        AdminUser saved = adminUserService.create(user, req.password);
-        return ResponseEntity.created(URI.create("/api/admin/users/" + saved.getId())).body(saved);
-    }
-
-    public static class UpdateUserRequest {
-        @jakarta.validation.constraints.NotBlank public String username;
-        @jakarta.validation.constraints.Email @jakarta.validation.constraints.NotBlank public String email;
-        public String password; // optional
-        public AdminUser.Role role;
-        public boolean active;
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<AdminUser> update(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest req) {
-        AdminUser toUpdate = new AdminUser();
-        toUpdate.setUsername(req.username);
-        toUpdate.setEmail(req.email);
-        toUpdate.setRole(req.role);
-        toUpdate.setActive(req.active);
-        AdminUser saved = adminUserService.update(id, toUpdate, req.password);
-        return ResponseEntity.ok(saved);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        adminUserService.delete(id);
-        return ResponseEntity.noContent().build();
+        public String username;
+        public String password;
+        public String role;
     }
 }
-
