@@ -1,7 +1,7 @@
-package finalice.project.finalice.project.controller;
+package com.donation.LifeLine.controllers;
 
-import finalice.project.finalice.project.domain.Campaign;
-import finalice.project.finalice.project.service.CampaignService;
+import com.donation.LifeLine.model.Campaign;
+import com.donation.LifeLine.services.CampaignService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

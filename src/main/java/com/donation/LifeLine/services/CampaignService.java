@@ -1,7 +1,7 @@
-package finalice.project.finalice.project.service;
+package com.donation.LifeLine.services;
 
-import finalice.project.finalice.project.domain.Campaign;
-import finalice.project.finalice.project.repository.CampaignRepository;
+import com.donation.LifeLine.model.Campaign;
+import com.donation.LifeLine.repository.CampaignRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
