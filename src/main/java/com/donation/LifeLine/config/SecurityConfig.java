@@ -30,7 +30,8 @@ public class SecurityConfig {
                         .requestMatchers("/donor/**").hasRole("DONOR")
                         .requestMatchers("/registration-officer/**").hasRole("REGISTRATION_OFFICER")
                         .requestMatchers("/medical-adviser/**").hasRole("MEDICAL_ADVISER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/hospital-coordinator/**").hasRole("HOSPITAL_COORDINATOR")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -67,8 +68,12 @@ public class SecurityConfig {
                             response.sendRedirect("/medical-adviser/dashboard");
                             return;
                         case "ROLE_ADMIN":
-                            response.sendRedirect("/admin/dashboard");
+                            response.sendRedirect("/api/admin/dashboard");
                             return;
+                        case "ROLE_HOSPITAL_COORDINATOR":
+                            response.sendRedirect("/hospital-coordinator/dashboard");
+                            return;
+
                     }
                 }
                 // Fallback redirect if no specific role is found
