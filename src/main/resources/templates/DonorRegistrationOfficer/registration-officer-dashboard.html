@@ -721,9 +721,23 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label"><i class="fas fa-calendar me-1"></i>Appointment Date</label>
-                                            <input type="date" class="form-control" name="appointmentDate" required>
+                                            <label class="form-label">
+                                                <i class="fas fa-calendar me-1"></i> Appointment Date
+                                            </label>
+                                            <input type="date"
+                                                   class="form-control"
+                                                   name="appointmentDate"
+                                                   id="appointmentDate"
+                                                   required>
                                         </div>
+
+                                        <script>
+                                            document.addEventListener("DOMContentLoaded", function() {
+                                                const today = new Date().toISOString().split("T")[0];
+                                                document.getElementById("appointmentDate").setAttribute("min", today);
+                                            });
+                                        </script>
+
 
                                         <div class="col-md-6">
                                             <label class="form-label"><i class="fas fa-clock me-1"></i>Time Slot</label>
