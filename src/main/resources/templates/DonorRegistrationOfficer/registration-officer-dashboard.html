@@ -368,14 +368,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link position-relative" href="#">
-                        <i class="fas fa-bell"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                            <span th:text="${TotalAppointments}">0</span>
-                        </span>
-                    </a>
-                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
                         <i class="fas fa-user-tie me-2"></i>
@@ -408,35 +400,6 @@
                 <a href="#" class="btn btn-primary mb-3">
                     <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                 </a>
-                
-<!--                <a href="#" class="btn btn-outline-secondary mb-2">-->
-<!--                    <i class="fas fa-user-check me-2"></i> Donor Registration-->
-<!--                </a>-->
-<!--                -->
-<!--                <a href="#" class="btn btn-outline-secondary mb-2">-->
-<!--                    <i class="fas fa-calendar-plus me-2"></i> Schedule Appointments-->
-<!--                </a>-->
-<!--                -->
-<!--                <a href="#" class="btn btn-outline-secondary mb-2">-->
-<!--                    <i class="fas fa-list-alt me-2"></i> Manage Appointments-->
-<!--                </a>-->
-<!--                -->
-<!--                <a href="#" class="btn btn-outline-secondary mb-2">-->
-<!--                    <i class="fas fa-chart-bar me-2"></i> Reports-->
-<!--                </a>-->
-<!--                -->
-<!--                <a href="#" class="btn btn-outline-secondary mb-2">-->
-<!--                    <i class="fas fa-cog me-2"></i> Settings-->
-<!--                </a>-->
-<!--                -->
-<!--                <hr style="border-color: var(&#45;&#45;light-red); margin: 2rem 0;">-->
-<!--                -->
-<!--                <div class="text-center">-->
-<!--                    <small style="color: var(&#45;&#45;text-light);">-->
-<!--                        <i class="fas fa-shield-alt me-1"></i>-->
-<!--                        Secure Registration Portal-->
-<!--                    </small>-->
-<!--                </div>-->
             </div>
         </div>
 
@@ -451,13 +414,6 @@
                         <p class="mb-0">Registered Donors</p>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="stats-card">
-                        <i class="fas fa-calendar-check fa-2x"></i>
-                        <h3 th:text="${TotalAppointments}">0</h3>
-                        <p class="mb-0">Total Appointments</p>
-                    </div>
-                </div>
             </div>
 
             <div class="row">
@@ -467,7 +423,7 @@
                             <i class="fas fa-clipboard-list" style="font-size: 2rem; color: var(--primary-red); margin-right: 1rem;"></i>
                             <div>
                                 <h4 class="mb-1" style="color: var(--primary-red); font-weight: 700;">Donor Management</h4>
-                                <p class="text-muted mb-0">Register donors and manage appointments</p>
+                                <p class="text-muted mb-0">Register donors</p>
                             </div>
                         </div>
                         
@@ -480,18 +436,6 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="registered-donors-tab" data-bs-toggle="tab" data-bs-target="#registered-donors" type="button">
                                     <i class="fas fa-user-check me-2"></i>Registered Donors
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="create-appointment-tab" data-bs-toggle="tab"
-                                        data-bs-target="#create-appointment" type="button">
-                                    <i class="fas fa-calendar-plus me-2"></i>Create Appointment
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="appointments-tab" data-bs-toggle="tab"
-                                        data-bs-target="#appointments" type="button">
-                                    <i class="fas fa-list-alt me-2"></i>Appointments
                                 </button>
                             </li>
                         </ul>
@@ -701,115 +645,7 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="create-appointment" role="tabpanel">
-                                <div class="d-flex align-items-center mb-4">
-                                    <i class="fas fa-calendar-plus" style="font-size: 1.5rem; color: var(--primary-red); margin-right: 0.5rem;"></i>
-                                    <h5 class="mb-0" style="color: var(--primary-red); font-weight: 600;">Schedule New Appointment</h5>
-                                </div>
-                                
-                                <form th:action="@{/appointments/save}" method="post">
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label"><i class="fas fa-user me-1"></i>Select Donor</label>
-                                            <select class="form-select" name="donorId" required>
-                                                <option value="">Choose Donor</option>
-                                                <option th:each="donor : ${registeredDonors}"
-                                                        th:value="${donor.id}"
-                                                        th:text="${donor.fullName + ' (' + donor.bloodGroup + ')'}">
-                                                </option>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label"><i class="fas fa-calendar me-1"></i>Appointment Date</label>
-                                            <input type="date" class="form-control" name="appointmentDate" required>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label"><i class="fas fa-clock me-1"></i>Time Slot</label>
-                                            <select class="form-select" name="timeSlot" required>
-                                                <option value="">Select Time</option>
-                                                <option>09:00 AM</option>
-                                                <option>10:00 AM</option>
-                                                <option>11:00 AM</option>
-                                                <option>12:00 PM</option>
-                                                <option>01:00 PM</option>
-                                                <option>02:00 PM</option>
-                                                <option>03:00 PM</option>
-                                                <option>04:00 PM</option>
-                                                <option>05:00 PM</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label"><i class="fas fa-map-marker-alt me-1"></i>Location</label>
-                                            <select class="form-select" name="location" required>
-                                                <option value="">Select Location</option>
-                                                <option>Main Center</option>
-                                                <option>City Branch</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label class="form-label"><i class="fas fa-sticky-note me-1"></i>Notes</label>
-                                            <textarea class="form-control" name="notes" rows="3" placeholder="Add any special notes or instructions..."></textarea>
-                                        </div>
-
-                                        <input type="hidden" name="status" value="Scheduled">
-
-                                        <div class="col-12">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-calendar-plus me-2"></i>Schedule Appointment
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="tab-pane fade" id="appointments" role="tabpanel">
-                                <div class="d-flex align-items-center mb-4">
-                                    <i class="fas fa-list-alt" style="font-size: 1.5rem; color: var(--primary-red); margin-right: 0.5rem;"></i>
-                                    <h5 class="mb-0" style="color: var(--primary-red); font-weight: 600;">Manage Appointments</h5>
-                                </div>
-                                
-                                <div class="table-responsive">
-                                    <table class="table" id="appointmentsTable">
-                                        <thead>
-                                        <tr>
-                                            <th><i class="fas fa-user me-1"></i>Donor Name</th>
-                                            <th><i class="fas fa-calendar me-1"></i>Date</th>
-                                            <th><i class="fas fa-clock me-1"></i>Time</th>
-                                            <th><i class="fas fa-map-marker-alt me-1"></i>Location</th>
-                                            <th><i class="fas fa-cogs me-1"></i>Actions</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <!-- Loop through appointments -->
-                                        <tr th:each="appointment : ${appointments}">
-                                            <td th:text="${appointment.donor.fullName}">Donor Name</td>
-                                            <td th:text="${appointment.appointmentDate}">2025-09-25</td>
-                                            <td th:text="${appointment.timeSlot}">10:00 AM</td>
-                                            <td th:text="${appointment.location}">Main Center</td>
-                                            <td>
-                                                <div class="d-flex gap-2">
-                                                    <a th:href="@{'/appointments/edit/' + ${appointment.id}}"
-                                                       class="btn btn-sm btn-info">
-                                                        <i class="fas fa-edit me-1"></i>Edit
-                                                    </a>
-                                                    <a th:href="@{'/appointments/delete/' + ${appointment.id}}"
-                                                       class="btn btn-sm btn-danger"
-                                                       onclick="return confirm('Are you sure you want to delete this appointment?');">
-                                                        <i class="fas fa-trash me-1"></i>Delete
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-
-                        </div> <!-- tab-content -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -852,19 +688,6 @@
                 "info": "Showing _START_ to _END_ of _TOTAL_ registered donors",
                 "infoEmpty": "No registered donors found",
                 "infoFiltered": "(filtered from _MAX_ total registered donors)"
-            }
-        });
-
-        $('#appointmentsTable').DataTable({
-            "pageLength": 10,
-            "searching": true,
-            "ordering": true,
-            "language": {
-                "search": "Search appointments:",
-                "lengthMenu": "Show _MENU_ appointments per page",
-                "info": "Showing _START_ to _END_ of _TOTAL_ appointments",
-                "infoEmpty": "No appointments found",
-                "infoFiltered": "(filtered from _MAX_ total appointments)"
             }
         });
 

@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -42,7 +44,39 @@ public class UserService {
                 .orElseThrow(() -> new Exception("Role not found: " + roleEnum));
         roles.add(role);
         user.setRoles(roles);
-
+        user.setRole(roleEnum.name());
         return userRepository.save(user);
     }
+    public List<User> listAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    public List<User> listUsersWithRoles() {
+        return userRepository.findByRoleIsNotNull();
+    }
+
+
+
+
+    public void updateUser(Long id, String username, String password, String roleStr) throws Exception {
+        User user = userRepository.findById(id).orElseThrow(() -> new Exception("User not found"));
+        user.setUsername(username);
+        if (password != null && !password.isBlank())
+            user.setPassword(passwordEncoder.encode(password));
+
+        Role role = roleRepository.findByName(ERole.valueOf(roleStr))
+                .orElseThrow(() -> new Exception("Role not found: " + roleStr));
+        user.setRoles(Set.of(role));
+
+        userRepository.save(user);
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
 }
+

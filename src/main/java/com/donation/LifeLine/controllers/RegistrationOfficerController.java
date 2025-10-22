@@ -1,7 +1,6 @@
 package com.donation.LifeLine.controllers;
 
 import com.donation.LifeLine.model.*;
-import com.donation.LifeLine.repository.AppointmentRepository;
 import com.donation.LifeLine.repository.RoleRepository;
 import com.donation.LifeLine.repository.UnregisterdDonorRepository;
 import com.donation.LifeLine.repository.UserRepository;
@@ -35,9 +34,6 @@ public class RegistrationOfficerController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AppointmentRepository appointmentRepository;
-
 
 
     @GetMapping("/dashboard")
@@ -49,7 +45,7 @@ public class RegistrationOfficerController {
         List<UnregisterdDonor> registeredDonors = donorRepository
                 .findByIsRegisteredTrue();
 
-       String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
 
 
         User officer = userRepository.findByUsername(username)
@@ -57,30 +53,14 @@ public class RegistrationOfficerController {
 
 
         long totalRegisteredDonors = donorRepository.countByIsRegisteredTrue();
-        long totalAppointments = appointmentRepository.count();
 
-        List<Appointment> appointments = appointmentRepository.findAll();
-        model.addAttribute("appointments", appointments);
         model.addAttribute("officerName", officer.getUsername());
         model.addAttribute("approvedDonors", approvedDonors);
         model.addAttribute("registeredDonors", registeredDonors);
         model.addAttribute("totalRegisteredDonors", totalRegisteredDonors);
-        model.addAttribute("TotalAppointments", totalAppointments);
         model.addAttribute("OfficerName"); // Placeholder, replace with actual name if available
         return "DonorRegistrationOfficer/registration-officer-dashboard";
     }
-
-//    /* ---------- EDIT (GET) ---------- */
-//    @GetMapping("/donors/edit/{id}")
-//    public String editDonorForm(@PathVariable Long id, Model model, RedirectAttributes ra) {
-//        UnregisterdDonor donor = donorRepository.findById(id).orElse(null);
-//        if (donor == null) {
-//            ra.addFlashAttribute("error", "Donor not found");
-//            return "redirect:/registration-officer/dashboard";
-//        }
-//        model.addAttribute("donor", donor);
-//        return "DonorRegistrationOfficer/edit-donor";
-//    }
 
     /* ---------- UPDATE (POST) ---------- */
     @PostMapping("/donors/update")
