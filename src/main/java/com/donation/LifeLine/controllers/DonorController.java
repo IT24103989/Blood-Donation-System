@@ -4,6 +4,8 @@ import com.donation.LifeLine.model.User;
 import com.donation.LifeLine.model.UnregisterdDonor;
 import com.donation.LifeLine.repository.UnregisterdDonorRepository;
 import com.donation.LifeLine.repository.UserRepository;
+import com.donation.LifeLine.services.AppointmentService;
+import com.donation.LifeLine.services.DonationHistoryService;
 import com.donation.LifeLine.services.DonorProfileService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +20,10 @@ import java.security.Principal;
 @RequestMapping("/donor")
 @PreAuthorize("hasRole('DONOR')")
 public class DonorController {
+
+
+    @Autowired
+    private DonationHistoryService donationHistoryService;
 
 
     private final UserRepository userRepository;
@@ -44,7 +50,18 @@ public class DonorController {
 
         UnregisterdDonor donor = unregisterdDonorRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Donor not found for userId: " + user.getId()));
+        List<Appointment> appointments = appointmentService.getAppointmentsForDonor(donor);
+
+        long totalAppointments = appointmentRepository.countByDonor(donor);
+
+        var donations = donationHistoryService.getByDonorNIC(donor.getNic());
+
+
+        model.addAttribute("donations", donations);
+        model.addAttribute("totalAppointments", totalAppointments);
+        model.addAttribute("appointments", appointments);
         model.addAttribute("donor", user);
+
         return "Donor/donor-dashboard"; // src/main/resources/templates/Donor/donor-dashboard.html
     }
 

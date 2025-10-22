@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LifeLine Admin Dashboard</title>
+    <style>
+        :root{
+            /* Red + White theme */
+            --bg:#ffffff;            /* page background */
+            --card:#ffffff;          /* surfaces */
+            --muted:#e9edf4;         /* borders / separators */
+            --text:#1a1c24;          /* main text */
+            --sub:#5b6478;           /* secondary text */
+            --primary:#e11d48;       /* red 600 */
+            --primary-600:#be123c;   /* red 700 */
+            --accent:#f43f5e;        /* bright red */
+            --success:#16a34a;       /* green */
+            --warning:#f59e0b;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 Inter,Segoe UI,Arial,sans-serif}
+
+        .layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+        .sidebar{background:#ffffff;border-right:1px solid var(--muted);padding:16px;display:flex;flex-direction:column;gap:16px;position:sticky;top:0;height:100vh}
+        .brand{font-weight:800;font-size:18px;letter-spacing:.5px;color:var(--primary)}
+        .sidebar nav{display:flex;flex-direction:column;gap:8px}
+        .sidebar nav a{padding:10px 12px;border-radius:10px;color:var(--sub);text-decoration:none}
+        .sidebar nav a.active,.sidebar nav a:hover{background:rgba(225,29,72,0.08);color:var(--primary)}
+        .sidebar-footer{margin-top:auto;color:var(--sub);font-size:12px}
+
+        .content{padding:20px 24px;}
+        .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+        .topbar .search{background:#fff;border:1px solid var(--muted);color:var(--text);padding:8px 10px;border-radius:10px;min-width:220px}
+        .btn{border:1px solid var(--muted);background:#fff;color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer}
+        .btn.primary{background:var(--primary);border-color:var(--primary-600);color:#fff}
+        .btn.ghost{background:transparent}
+
+        .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
+        .card{background:#fff;border:1px solid var(--muted);border-radius:16px;padding:14px;box-shadow:0 2px 10px rgba(30,41,59,0.04)}
+        .metric{display:flex;align-items:center;gap:12px}
+        .metric .icon{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:800;color:var(--primary)}
+        .metric .icon.red{background:rgba(225,29,72,0.1);border:1px solid rgba(225,29,72,0.25)}
+        .metric .icon.orange{background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.2)}
+        .metric .icon.purple{background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.18)}
+        .metric .icon.green{background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.22);color:#15803d}
+        .metric-body{display:flex;flex-direction:column}
+        .metric-title{color:var(--sub);font-size:12px}
+        .metric-value{font-size:22px;font-weight:800}
+
+        .panel{background:#fff;border:1px solid var(--muted);border-radius:16px;margin-bottom:16px;box-shadow:0 2px 10px rgba(30,41,59,0.04)}
+        .panel-head{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid var(--muted)}
+        .inline-form{display:flex;gap:8px;flex-wrap:wrap}
+        input,select{background:#fff;border:1px solid var(--muted);color:var(--text);padding:8px 10px;border-radius:10px}
+        .switch{display:flex;align-items:center;gap:6px;color:var(--sub)}
+        .table-wrap{overflow:auto}
+        .table{width:100%;border-collapse:collapse}
+        .table th,.table td{padding:10px 12px;border-bottom:1px solid var(--muted);text-align:left}
+        .table thead th{color:var(--sub);font-weight:600;font-size:12px}
+        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+        .hidden{display:none}
+
+        @media (max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}}
+        @media (max-width:720px){.layout{grid-template-columns:1fr}.sidebar{position:static;height:auto;border-right:0;border-bottom:1px solid var(--muted)}.cards{grid-template-columns:1fr}}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script>
+        async function fetchJSON(url, opts) {
+            const res = await fetch(url, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts));
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        }
+
+        async function loadDashboard() {
+            await Promise.all([
+                loadInventory(),
+                loadCampaigns(),
+                loadReports(),
+                loadUsers(),
+            ]);
+            highlightNav();
+            routeTo(location.hash || '#dashboard');
+        }
+
+        let invChartRef = null;
+        async function loadInventory() {
+            const data = await fetchJSON('/api/admin/inventory');
+            const tbody = document.querySelector('#inventory tbody');
+            tbody.innerHTML = data.map(b => `<tr><td>${b.bloodType}</td><td>${b.unitsAvailable}</td></tr>`).join('');
+
+            // Update Dashboard KPIs (sum + and - for each group)
+            const sumGroup = (g) => data
+                .filter(x => x.bloodType.startsWith(g))
+                .reduce((s,x) => s + (x.unitsAvailable||0), 0);
+            document.getElementById('kpiA').textContent = sumGroup('A');
+            document.getElementById('kpiB').textContent = sumGroup('B');
+            document.getElementById('kpiAB').textContent = sumGroup('AB');
+            document.getElementById('kpiO').textContent = sumGroup('O');
+
+            // Build chart by exact type
+            const labels = ['A+','A-','B+','B-','AB+','AB-','O+','O-'];
+            const values = labels.map(t => (data.find(x => x.bloodType===t)?.unitsAvailable)||0);
+
+            const ctx = document.getElementById('invChart');
+            if (ctx) {
+                if (invChartRef) { invChartRef.destroy(); }
+                invChartRef = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels, datasets: [{
+                            label: 'Units Available',
+                            data: values,
+                            backgroundColor: labels.map(()=>'rgba(225,29,72,0.3)'),
+                            borderColor: labels.map(()=>'rgba(190,18,60,1)'),
+                            borderWidth: 1,
+                            borderRadius: 6,
+                        }]},
+                    options: { responsive: true, maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true, ticks: { precision:0 } } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        async function loadCampaigns() {
+            const data = await fetchJSON('/api/admin/campaigns');
+            const tbody = document.querySelector('#campaigns tbody');
+            tbody.innerHTML = data.map(c => `<tr><td>${c.title}</td><td>${c.startDate||''}</td><td>${c.endDate||''}</td><td>${c.active}</td></tr>`).join('');
+        }
+
+        async function loadReports() {
+            const data = await fetchJSON('/api/admin/reports');
+            const tbody = document.querySelector('#reports tbody');
+            tbody.innerHTML = data.map(r => `<tr><td>${r.title}</td><td>${(r.content||'').slice(0,60)}</td></tr>`).join('');
+        }
+
+        let selectedUserId = null;
+        async function loadUsers() {
+            const data = await fetchJSON('/api/admin/users');
+            const tbody = document.querySelector('#users tbody');
+            tbody.innerHTML = data.map(u => `
+                <tr>
+                  <td>${u.username}</td>
+                  <td>${u.email}</td>
+                  <td>${u.role}</td>
+                  <td>${u.active}</td>
+                  <td>
+                    <button class="btn" onclick='onEditUser(${JSON.stringify(u.id)})'>Edit</button>
+                    <button class="btn" onclick='onDeleteUser(${JSON.stringify(u.id)})'>Delete</button>
+                  </td>
+                </tr>`).join('');
+        }
+
+        function onEditUser(id){
+            selectedUserId = id;
+            fetchJSON('/api/admin/users/' + id).then(u => {
+                const f = document.querySelector('#userForm');
+                f.username.value = u.username;
+                f.email.value = u.email;
+                f.password.value = '';
+                f.role.value = u.role;
+                f.active.checked = !!u.active;
+                f.querySelector('[data-mode]').textContent = 'Update user';
+            });
+        }
+
+        async function onDeleteUser(id){
+            if(!confirm('Delete this user?')) return;
+            await fetch('/api/admin/users/' + id, { method: 'DELETE' });
+            if(selectedUserId === id) { selectedUserId = null; document.querySelector('#userForm').reset(); }
+            loadUsers();
+        }
+
+        async function submitUser(e){
+            e.preventDefault();
+            const f = e.target;
+            const btn = f.querySelector('[data-mode]');
+            btn.disabled = true;
+            try{
+                const payload = {
+                    username: f.username.value,
+                    email: f.email.value,
+                    password: f.password.value,
+                    role: f.role.value,
+                    active: f.active.checked
+                };
+                if(selectedUserId){
+                    if(!payload.password) delete payload.password; // optional on update
+                    await fetchJSON('/api/admin/users/' + selectedUserId, { method: 'PUT', body: JSON.stringify(payload) });
+                } else {
+                    if(!payload.password){ alert('Password is required to create a user.'); return; }
+                    await fetchJSON('/api/admin/users', { method: 'POST', body: JSON.stringify(payload) });
+                }
+                f.reset();
+                selectedUserId = null;
+                btn.textContent = 'Create user';
+                loadUsers();
+            }catch(err){
+                console.error(err);
+                alert('Failed to save user: ' + err);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function createCampaign(e) {
+            e.preventDefault();
+            const form = e.target;
+            const payload = {
+                title: form.title.value,
+                description: form.description.value,
+                startDate: form.startDate.value || null,
+                endDate: form.endDate.value || null,
+                active: form.active.checked
+            };
+            await fetchJSON('/api/admin/campaigns', { method: 'POST', body: JSON.stringify(payload) });
+            form.reset();
+            loadCampaigns();
+        }
+
+        async function createReport(e) {
+            e.preventDefault();
+            const form = e.target;
+            const payload = { title: form.title.value, content: form.content.value };
+            await fetchJSON('/api/admin/reports', { method: 'POST', body: JSON.stringify(payload) });
+            form.reset();
+            loadReports();
+        }
+
+        async function updateInventory(e) {
+            e.preventDefault();
+            const form = e.target;
+            const payload = { bloodType: form.bloodType.value, unitsAvailable: parseInt(form.units.value || '0', 10) };
+            // naive: create or update by listing and matching type
+            const list = await fetchJSON('/api/admin/inventory');
+            const match = list.find(x => x.bloodType === payload.bloodType);
+            if (match) {
+                await fetchJSON('/api/admin/inventory/' + match.id, { method: 'PUT', body: JSON.stringify(Object.assign(match, payload)) });
+            } else {
+                await fetchJSON('/api/admin/inventory', { method: 'POST', body: JSON.stringify(payload) });
+            }
+            form.reset();
+            loadInventory();
+        }
+
+        window.addEventListener('DOMContentLoaded', loadDashboard);
+
+        function highlightNav(){
+            const hash = location.hash || '#dashboard';
+            document.querySelectorAll('.sidebar nav a').forEach(a => {
+                if(a.getAttribute('href') === hash){ a.classList.add('active'); }
+                else { a.classList.remove('active'); }
+            });
+        }
+        function routeTo(hash){
+            const show = (id, visible)=>{
+                const el = document.querySelector(id);
+                if(!el) return;
+                if(visible) el.classList.remove('hidden'); else el.classList.add('hidden');
+            };
+            // default: dashboard
+            const isDash = (hash === '#dashboard');
+            show('#dashboard-cards', isDash);
+            show('#dashboard-chart', isDash);
+            show('#inventory', hash === '#inventory');
+            show('#campaigns-section', hash === '#campaigns');
+            show('#reports', hash === '#reports');
+            show('#users', hash === '#users');
+        }
+        window.addEventListener('hashchange', () => {
+            highlightNav();
+            routeTo(location.hash || '#dashboard');
+        });
+    </script>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="brand">🩸 LifeLine</div>
+        <nav>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#inventory">Inventory</a>
+            <a href="#campaigns">Campaigns</a>
+            <a href="#reports">Reports</a>
+            <a href="#users">Admins</a>
+        </nav>
+        <div class="sidebar-footer">v0.1</div>
+    </aside>
+
+    <main class="content">
+        <div id="dashboard"></div>
+        <header class="topbar">
+            <h1>Admin Dashboard</h1>
+            <div class="topbar-actions">
+                <input class="search" placeholder="Search…" />
+                <button class="btn ghost">⟳ Refresh</button>
+            </div>
+        </header>
+
+        <section class="cards" id="dashboard-cards">
+            <div class="card metric">
+                <div class="icon red">A</div>
+                <div class="metric-body">
+                    <div class="metric-title">Group A</div>
+                    <div class="metric-value" id="kpiA">—</div>
+                </div>
+            </div>
+            <div class="card metric">
+                <div class="icon orange">B</div>
+                <div class="metric-body">
+                    <div class="metric-title">Group B</div>
+                    <div class="metric-value" id="kpiB">—</div>
+                </div>
+            </div>
+            <div class="card metric">
+                <div class="icon purple">AB</div>
+                <div class="metric-body">
+                    <div class="metric-title">Group AB</div>
+                    <div class="metric-value" id="kpiAB">—</div>
+                </div>
+            </div>
+            <div class="card metric">
+                <div class="icon green">O</div>
+                <div class="metric-body">
+                    <div class="metric-title">Group O</div>
+                    <div class="metric-value" id="kpiO">—</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel" id="dashboard-chart">
+            <div class="panel-head">
+                <h2>Inventory by Blood Type</h2>
+            </div>
+            <div style="height:260px;padding:12px 14px;">
+                <canvas id="invChart"></canvas>
+            </div>
+        </section>
+
+        <section class="panel hidden" id="inventory">
+            <div class="panel-head">
+                <h2>Blood Inventory</h2>
+                <form class="inline-form" onsubmit="updateInventory(event)">
+                    <select name="bloodType" required>
+                        <option value="">Blood type</option>
+                        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                        <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                    </select>
+                    <input type="number" name="units" min="0" placeholder="Units" required />
+                    <button class="btn primary" type="submit">Save</button>
+                </form>
+            </div>
+            <div class="table-wrap">
+                <table class="table" ><thead><tr><th>Type</th><th>Units</th></tr></thead><tbody></tbody></table>
+            </div>
+        </section>
+
+        <section class="grid-2 hidden" id="campaigns-section">
+            <div class="panel" id="campaigns">
+                <div class="panel-head">
+                    <h2>Campaigns</h2>
+                    <form class="inline-form" onsubmit="createCampaign(event)">
+                        <input name="title" placeholder="Title" required />
+                        <input name="description" placeholder="Description" />
+                        <input type="date" name="startDate" />
+                        <input type="date" name="endDate" />
+                        <label class="switch">
+                            <input type="checkbox" name="active" checked />
+                            <span>Active</span>
+                        </label>
+                        <button class="btn primary" type="submit">Create</button>
+                    </form>
+                </div>
+                <div class="table-wrap">
+                    <table class="table"><thead><tr><th>Title</th><th>Start</th><th>End</th><th>Active</th></tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+
+            <div class="panel" id="reports">
+                <div class="panel-head">
+                    <h2>Reports</h2>
+                    <form class="inline-form" onsubmit="createReport(event)">
+                        <input name="title" placeholder="Title" required />
+                        <input name="content" placeholder="Content" />
+                        <button class="btn primary" type="submit">Create</button>
+                    </form>
+                </div>
+                <div class="table-wrap">
+                    <table class="table"><thead><tr><th>Title</th><th>Content</th></tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel hidden" id="users">
+            <div class="panel-head">
+                <h2>Admin Users</h2>
+                <form id="userForm" class="inline-form" onsubmit="submitUser(event)">
+                    <input name="username" placeholder="Username" required />
+                    <input type="email" name="email" placeholder="Email" required />
+                    <input type="password" name="password" placeholder="Password" />
+                    <select name="role">
+                        <option value="CHEF_MEDICAL_OFFICER">CHEF MEDICAL OFFICER</option>
+                        <option value="MEDICAL_OFFICER">MEDICAL OFFICER</option>
+                        <option value="NURSE">NURSE</option>
+                    </select>
+                    <label class="switch"><input type="checkbox" name="active" checked /><span>Active</span></label>
+                    <button class="btn primary" type="submit" data-mode>Create user</button>
+                    <button class="btn" type="button" onclick="selectedUserId=null; this.closest('form').reset(); this.previousElementSibling.textContent='Create user'">Clear</button>
+                </form>
+            </div>
+            <div class="table-wrap">
+                <table class="table"><thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Active</th><th style="width:120px">Actions</th></tr></thead><tbody></tbody></table>
+            </div>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>
