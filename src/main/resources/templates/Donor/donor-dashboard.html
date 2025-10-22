@@ -492,6 +492,109 @@
                     </div>
                 </div>
 
+                <!-- Stats Cards -->
+                <div class="col-md-6">
+                    <div class="stats-card">
+                        <i class="fas fa-tint fa-2x"></i>
+                        <h3>2</h3>
+                        <p class="mb-0">Total Donations</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stats-card">
+                        <i class="fas fa-calendar-check fa-2x"></i>
+                        <h3 th:text="${totalAppointments}">0</h3>
+                        <p class="mb-0">Upcoming Appointments</p>
+                    </div>
+                </div>
+
+                <!-- Upcoming Appointments -->
+                <div class="col-12">
+                    <div class="dashboard-card p-4 bg-white">
+                        <h4 class="section-header">
+                            <i class="fas fa-calendar-alt"></i>Upcoming Appointments
+                        </h4>
+
+                        <div th:if="${#lists.isEmpty(appointments)}" class="text-center py-4">
+                            <i class="fas fa-calendar-times" style="font-size: 3rem; color: var(--text-light); margin-bottom: 1rem;"></i>
+                            <p class="text-muted">No upcoming appointments scheduled.</p>
+                        </div>
+
+                        <div th:each="appt : ${appointments}" class="appointment-card p-4 mb-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-calendar medical-icon me-2"></i>
+                                        <div>
+                                            <strong>Date:</strong><br>
+                                            <span th:text="${appt.appointmentDate}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-clock medical-icon me-2"></i>
+                                        <div>
+                                            <strong>Time:</strong><br>
+                                            <span th:text="${appt.timeSlot}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-map-marker-alt medical-icon me-2"></i>
+                                        <div>
+                                            <strong>Location:</strong><br>
+                                            <span th:text="${appt.location}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle me-1"></i>Scheduled
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donation History -->
+                <div class="col-12">
+                    <div class="dashboard-card p-4 bg-white">
+                        <h4 class="section-header">
+                            <i class="fas fa-history"></i> Recent Donations
+                        </h4>
+
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th><i class="fas fa-calendar me-1"></i>Date</th>
+                                    <th><i class="fas fa-map-marker-alt me-1"></i>Location</th>
+                                    <th><i class="fas fa-vial me-1"></i>Hemoglobin Level</th>
+                                    <th><i class="fas fa-sticky-note me-1"></i>Notes</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <!-- Dynamic donor history -->
+                                <tr th:each="d : ${donations}">
+                                    <td th:text="${#dates.format(d.donationDate, 'yyyy-MM-dd')}"></td>
+                                    <td th:text="${d.donationLocation}"></td>
+                                    <td th:text="${d.hemoglobinLevel != null ? d.hemoglobinLevel + ' g/dL' : '—'}"></td>
+                                    <td th:text="${d.notes}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Message when there are no donations -->
+                            <p class="no-data text-muted mt-2" th:if="${#lists.isEmpty(donations)}">
+                                You haven't donated blood yet.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
