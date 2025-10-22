@@ -51,6 +51,4 @@ public class UnregisterdDonor {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Appointment> appointments;
 }

@@ -1,15 +1,12 @@
 package com.donation.LifeLine.controllers;
 
-import com.donation.LifeLine.model.Appointment;
 import com.donation.LifeLine.model.User;
 import com.donation.LifeLine.model.UnregisterdDonor;
-import com.donation.LifeLine.repository.AppointmentRepository;
 import com.donation.LifeLine.repository.UnregisterdDonorRepository;
 import com.donation.LifeLine.repository.UserRepository;
 import com.donation.LifeLine.services.AppointmentService;
 import com.donation.LifeLine.services.DonationHistoryService;
 import com.donation.LifeLine.services.DonorProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,15 +15,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 @RequestMapping("/donor")
 @PreAuthorize("hasRole('DONOR')")
 public class DonorController {
 
-    @Autowired
-    private AppointmentRepository appointmentRepository;
 
     @Autowired
     private DonationHistoryService donationHistoryService;
@@ -34,14 +28,11 @@ public class DonorController {
 
     private final UserRepository userRepository;
     private final DonorProfileService donorProfileService;
-    private final AppointmentService appointmentService;
     private final UnregisterdDonorRepository unregisterdDonorRepository;
 
     public DonorController(UserRepository userRepository,
                            DonorProfileService donorProfileService,
-                           AppointmentService appointmentService,
                            UnregisterdDonorRepository unregisterdDonorRepository) {
-        this.appointmentService = appointmentService;
         this.userRepository = userRepository;
         this.donorProfileService = donorProfileService;
         this.unregisterdDonorRepository = unregisterdDonorRepository;

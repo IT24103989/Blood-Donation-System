@@ -10,17 +10,17 @@ import java.util.Optional;
 
 
 
-    @Repository
-    public interface UserRepository extends JpaRepository<User, Long> {
-        Optional<User> findByUsername(String username);
-        Boolean existsByUsername(String username);
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
+    Boolean existsByUsername(String username);
 
-        // Optional: Find all users with a given role
-        List<User> findByRoles_Name(Role.ERole role);
-        List<User> findByRoleIsNotNull();
+    // Optional: Find all users with a given role
+    List<User> findByRoles_Name(Role.ERole role);
+    List<User> findByRoleIsNotNull();
 
 
-    }
+}
 
 
 
