@@ -1,14 +1,10 @@
 package com.donation.LifeLine.controllers;
 
-import com.donation.LifeLine.model.Appointment;
 import com.donation.LifeLine.model.User;
 import com.donation.LifeLine.model.UnregisterdDonor;
-import com.donation.LifeLine.repository.AppointmentRepository;
 import com.donation.LifeLine.repository.UnregisterdDonorRepository;
 import com.donation.LifeLine.repository.UserRepository;
-import com.donation.LifeLine.services.AppointmentService;
 import com.donation.LifeLine.services.DonorProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,26 +13,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 @RequestMapping("/donor")
 @PreAuthorize("hasRole('DONOR')")
 public class DonorController {
 
-    @Autowired
-    private AppointmentRepository appointmentRepository;
 
     private final UserRepository userRepository;
     private final DonorProfileService donorProfileService;
-    private final AppointmentService appointmentService;
     private final UnregisterdDonorRepository unregisterdDonorRepository;
 
     public DonorController(UserRepository userRepository,
                            DonorProfileService donorProfileService,
-                           AppointmentService appointmentService,
                            UnregisterdDonorRepository unregisterdDonorRepository) {
-        this.appointmentService = appointmentService;
         this.userRepository = userRepository;
         this.donorProfileService = donorProfileService;
         this.unregisterdDonorRepository = unregisterdDonorRepository;
@@ -54,16 +44,6 @@ public class DonorController {
 
         UnregisterdDonor donor = unregisterdDonorRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Donor not found for userId: " + user.getId()));
-        List<Appointment> appointments = appointmentService.getAppointmentsForDonor(donor);
-
-        long totalAppointments = appointmentRepository.countByDonor(donor);
-
-
-
-         model.addAttribute("totalAppointments", totalAppointments);
-        model.addAttribute("appointments", appointments);
-
-
         model.addAttribute("donor", user);
         return "Donor/donor-dashboard"; // src/main/resources/templates/Donor/donor-dashboard.html
     }
