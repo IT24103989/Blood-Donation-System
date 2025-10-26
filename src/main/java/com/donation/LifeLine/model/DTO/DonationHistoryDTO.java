@@ -12,28 +12,91 @@ public class DonationHistoryDTO {
     private String medicalOfficer;
     private String notes;
 
-    // --- getters & setters ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // ✅ Add these two new fields
+    private String bloodType;
+    private String status;
 
-    public String getDonorName() { return donorName; }
-    public void setDonorName(String donorName) { this.donorName = donorName; }
+    // ---- getters & setters ----
 
-    public String getDonorNIC() { return donorNIC; }
-    public void setDonorNIC(String donorNIC) { this.donorNIC = donorNIC; }
+    public Long getId() {
+        return id;
+    }
 
-    public LocalDate getDonationDate() { return donationDate; }
-    public void setDonationDate(LocalDate donationDate) { this.donationDate = donationDate; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getDonationLocation() { return donationLocation; }
-    public void setDonationLocation(String donationLocation) { this.donationLocation = donationLocation; }
+    public String getDonorName() {
+        return donorName;
+    }
 
-    public Double getHemoglobinLevel() { return hemoglobinLevel; }
-    public void setHemoglobinLevel(Double hemoglobinLevel) { this.hemoglobinLevel = hemoglobinLevel; }
+    public void setDonorName(String donorName) {
+        this.donorName = donorName;
+    }
 
-    public String getMedicalOfficer() { return medicalOfficer; }
-    public void setMedicalOfficer(String medicalOfficer) { this.medicalOfficer = medicalOfficer; }
+    public String getDonorNIC() {
+        return donorNIC;
+    }
 
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public void setDonorNIC(String donorNIC) {
+        this.donorNIC = donorNIC;
+    }
+
+    public LocalDate getDonationDate() {
+        return donationDate;
+    }
+
+    public void setDonationDate(LocalDate donationDate) {
+        this.donationDate = donationDate;
+    }
+
+    public String getDonationLocation() {
+        return donationLocation;
+    }
+
+    public void setDonationLocation(String donationLocation) {
+        this.donationLocation = donationLocation;
+    }
+
+    public Double getHemoglobinLevel() {
+        return hemoglobinLevel;
+    }
+
+    public void setHemoglobinLevel(Double hemoglobinLevel) {
+        this.hemoglobinLevel = hemoglobinLevel;
+    }
+
+    public String getMedicalOfficer() {
+        return medicalOfficer;
+    }
+
+    public void setMedicalOfficer(String medicalOfficer) {
+        this.medicalOfficer = medicalOfficer;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    // ✅ Add getters & setters for new fields
+
+    public String getBloodType() {
+        return bloodType;
+    }
+
+    public void setBloodType(String bloodType) {
+        this.bloodType = bloodType;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

@@ -1,7 +1,6 @@
 package com.donation.LifeLine.model;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 
 @Entity
@@ -12,14 +11,13 @@ public class DonationHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "donor_name", nullable = false)
+    @Column(name = "donor_name")
     private String donorName;
 
     @Column(name = "donor_nic", nullable = false)
     private String donorNIC;
 
     @Column(name = "donation_date")
-    @JsonFormat(pattern = "yyyy-MM-dd")   // ✅ enforce correct date format
     private LocalDate donationDate;
 
     @Column(name = "donation_location")
@@ -31,10 +29,16 @@ public class DonationHistory {
     @Column(name = "medical_officer")
     private String medicalOfficer;
 
-    @Column(length = 2000)
+    @Column(name = "notes")
     private String notes;
 
-    // --- getters and setters ---
+    @Column(name = "blood_type")
+    private String bloodType;
+
+    @Column(name = "status")
+    private String status;
+
+    // ===== Getters and Setters =====
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -58,4 +62,10 @@ public class DonationHistory {
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
+
+    public String getBloodType() { return bloodType; }
+    public void setBloodType(String bloodType) { this.bloodType = bloodType; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

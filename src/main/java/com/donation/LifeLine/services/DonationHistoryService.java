@@ -26,6 +26,9 @@ public class DonationHistoryService {
         dh.setHemoglobinLevel(dto.getHemoglobinLevel());
         dh.setMedicalOfficer(dto.getMedicalOfficer());
         dh.setNotes(dto.getNotes());
+        // ✅ ADD THESE TWO LINES - THIS IS WHAT'S MISSING!
+        dh.setBloodType(dto.getBloodType());
+        dh.setStatus(dto.getStatus());
         return donationHistoryRepository.save(dh);
     }
 
@@ -38,6 +41,10 @@ public class DonationHistoryService {
         return donationHistoryRepository.findByDonorNIC(donorNIC);
     }
 
+    public List<DonationHistory> getAll() {
+        return donationHistoryRepository.findAll();
+    }
+
     @Transactional
     public Optional<DonationHistory> update(Long id, DonationHistoryDTO dto) {
         return donationHistoryRepository.findById(id).map(dh -> {
@@ -48,6 +55,9 @@ public class DonationHistoryService {
             if (dto.getHemoglobinLevel() != null) dh.setHemoglobinLevel(dto.getHemoglobinLevel());
             if (dto.getMedicalOfficer() != null) dh.setMedicalOfficer(dto.getMedicalOfficer());
             if (dto.getNotes() != null) dh.setNotes(dto.getNotes());
+            // ✅ ADD THESE TWO LINES FOR UPDATE AS WELL!
+            if (dto.getBloodType() != null) dh.setBloodType(dto.getBloodType());
+            if (dto.getStatus() != null) dh.setStatus(dto.getStatus());
             return donationHistoryRepository.save(dh);
         });
     }
@@ -58,12 +68,17 @@ public class DonationHistoryService {
         return true;
     }
 
-
-
-
     public List<DonorFrequencyDTO> donorFrequencyReport(LocalDate from, LocalDate to, Long minDonations) {
+        // Set default date range if not provided
         if (to == null) to = LocalDate.now();
         if (from == null) from = to.minusYears(1);
+
+        // Ensure from date is not after to date
+        if (from.isAfter(to)) {
+            LocalDate temp = from;
+            from = to;
+            to = temp;
+        }
 
         List<Object[]> rows = donationHistoryRepository.countDonationsBetween(from, to);
         List<DonorFrequencyDTO> result = new ArrayList<>();
@@ -72,10 +87,14 @@ public class DonationHistoryService {
             String nic = (String) row[0];
             String name = (String) row[1];
             Long count = ((Number) row[2]).longValue();
+
+            // Apply minimum donations filter if provided
             if (minDonations != null && count < minDonations) continue;
+
             result.add(new DonorFrequencyDTO(nic, name, count));
         }
 
+        // Sort by donation count in descending order
         result.sort(Comparator.comparing(DonorFrequencyDTO::getDonationCount).reversed());
         return result;
     }
